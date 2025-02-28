@@ -1,5 +1,6 @@
 const {
-  convertTimestampToDate
+  convertTimestampToDate,
+  createRefObject
 } = require("../db/seeds/utils");
 
 describe("convertTimestampToDate", () => {
@@ -38,3 +39,25 @@ describe("convertTimestampToDate", () => {
   });
 });
 
+describe("createRefObject", () => {
+  test("returns an object", () => {
+    const result = createRefObject([], "", "");
+    expect(typeof result).toBe('object');
+  })
+  test("returns a reference object when passed-in array contains single object", () => {
+    const array = [{name: 'liv', favColour: 'green'}];
+    const expectedOutput = {'green': 'liv'}
+    // act
+    const result = createRefObject(array, 'favColour', 'name');
+    // assert
+    expect(result).toEqual(expectedOutput);
+  })
+  test("returns a reference object when passed-in array contains multiple objects", () => {
+    const array = [{name: 'liv', favColour: 'green'}, {name: 'alex', favColour: 'red'}];
+    const expectedOutput = {'liv': 'green', 'alex': 'red'}
+    // act
+    const result = createRefObject(array, 'name', 'favColour');
+    // assert
+    expect(result).toEqual(expectedOutput);
+  })
+});
