@@ -24,12 +24,12 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
     return insertUsers(userData);
   }).then((userInfo) => {
     const authorNames = userInfo.rows;
-    const authorLookup = createRefObject(authorNames, "username", "username");
+    const authorLookup = createRefObject(authorNames, "username", "author");
 
       return db.query(`SELECT * FROM topics`)
       .then((topicInfo) => {
         const topicNames = topicInfo.rows;
-        const topicLookup = createRefObject(topicNames, "slug", "slug");
+        const topicLookup = createRefObject(topicNames, "slug", "topic");
         const formattedArticles = articleData.map((article) => {
           const { created_at } = convertTimestampToDate(article);
           return [
@@ -50,7 +50,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       });
   }).then((articleInfo) => {
     const articleTitle = articleInfo.rows;
-    const articleLookup = createRefObject(articleTitle, "title", "article_id")
+    const articleLookup = createRefObject(articleTitle, "article_id", "article_id")
 
     return db.query(`SELECT * FROM users`)
     .then((userInfo) => {
