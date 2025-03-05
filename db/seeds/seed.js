@@ -19,60 +19,14 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
   }).then(() => {
     return createComments();
   }).then(() => {
-    return insertTopics(topicData);
-  }).then(() => {
     return insertUsers(userData);
-  }).then((userInfo) => {
-    const authorNames = userInfo.rows;
-    const authorLookup = createRefObject(authorNames, "username", "author");
-
-      return db.query(`SELECT * FROM topics`)
-      .then((topicInfo) => {
-        const topicNames = topicInfo.rows;
-        const topicLookup = createRefObject(topicNames, "slug", "topic");
-        const formattedArticles = articleData.map((article) => {
-          const { created_at } = convertTimestampToDate(article);
-          return [
-            article.title, 
-            topicLookup[article.topic], 
-            authorLookup[article.author],
-            article.body,
-            created_at,
-            article.votes,
-            article.article_img_url 
-          ];
-        });
-        const sqlArticles = format(
-          `INSERT INTO articles (title, topic, author, body, created_at, votes, article_img_url)
-          VALUES %L RETURNING *`, formattedArticles
-        );
-        return db.query(sqlArticles);
-      });
+  }).then(() => {
+    return insertTopics(topicData);
+  }).then((topicInfo) => {
+    return insertArticles(topicInfo, articleData);
   }).then((articleInfo) => {
-    const articleTitle = articleInfo.rows;
-    const articleLookup = createRefObject(articleTitle, "article_id", "article_id")
-
-    return db.query(`SELECT * FROM users`)
-    .then((userInfo) => {
-      const userCatelogue = userInfo.rows;
-      const userLookup = createRefObject(userCatelogue, "username", "author");
-      const formattedComments = commentData.map((comment) => {
-        const { created_at } = convertTimestampToDate(comment);
-        return [
-          articleLookup[comment.article_id],
-          comment.body,
-          comment.votes,
-          userLookup[comment.author],
-          created_at
-        ]
-      })
-      const sqlComments = format(`
-        INSERT INTO comments (article_id, body, votes, author, created_at)
-        VALUES %L`, formattedComments
-      );
-        return db.query(sqlComments);
-    })
-  })
+    return insertComments(articleInfo, commentData);
+})
 };
 
 module.exports = seed;
@@ -139,28 +93,45 @@ function insertUsers(y) {
   return db.query(sqlUsers);
 }
 
-// function insertArticles(z, a, {topicData}) {
-//   const authorNames = z.rows;
-//   const authorLookup = createRefObject(authorNames, "username", "username");
+function insertArticles(topicInfo, x) {
+  const topicNames = topicInfo.rows;
+      const topicLookup = createRefObject(topicNames, "slug", "topic");
+      const formattedArticles = x.map((article) => {
+        const { created_at } = convertTimestampToDate(article);
+        return [
+          article.title, 
+          topicLookup[article.topic], 
+          article.author,
+          article.body,
+          created_at,
+          article.votes,
+          article.article_img_url 
+        ];
+      });
+        const sqlArticles = format(
+          `INSERT INTO articles (title, topic, author, body, created_at, votes, article_img_url)
+          VALUES %L RETURNING *`, formattedArticles
+        );
+        return db.query(sqlArticles)
+}
 
-//   const topicNames = insertTopics(topicData).rows;
-//   const topicLookup = createRefObject(topicNames, "slug", "slug");
-
-//   const formattedArticles = a.map((article) => {
-//     return [
-//       article.title, 
-//       topicLookup[article.topic], 
-//       authorLookup[article.author],
-//       article.body,
-//       article.created_at,
-//       article.votes,
-//       article.article_img_url 
-//     ];
-//   });
-
-//   const sqlArticles = format(
-//     `INSERT INTO articles (title, topic, author, body, created_at, votes, article_img_url)
-//     VALUES %L RETURNING *`, formattedArticles
-//   );
-//   return db.query(sqlArticles);
-// }
+function insertComments(articleInfo, x) {
+  const articleArray = articleInfo.rows;
+  const articleLookup = createRefObject(articleArray, "title", "article_id")
+  
+    const formattedComments = x.map((comment) => {
+      const { created_at } = convertTimestampToDate(comment);
+      return [
+        articleLookup[comment.article_title],
+        comment.body,
+        comment.votes,
+        comment.author,
+        created_at
+      ]
+    })
+    const sqlComments = format(`
+      INSERT INTO comments (article_id, body, votes, author, created_at)
+      VALUES %L`, formattedComments
+    );
+      return db.query(sqlComments);
+};
