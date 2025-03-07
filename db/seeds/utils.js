@@ -7,7 +7,6 @@ const convertTimestampToDate = ({ created_at, ...otherProperties }) => {
 
 function createRefObject(array, key1, key2) {
   const refObject = {};
-  // console.log(array);
   array.forEach((object) => {
     refObject[object[key1]] = object[key2];
   })
