@@ -96,7 +96,6 @@ function insertUsers(y) {
 function insertArticles(topicInfo, x) {
   const topicNames = topicInfo.rows;
       const topicLookup = createRefObject(topicNames, "topic", "slug"); // swapped topic and slug around
-      console.log(topicLookup);
       const formattedArticles = x.map((article) => {
         const { created_at } = convertTimestampToDate(article);
         return [
