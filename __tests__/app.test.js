@@ -99,3 +99,40 @@ describe("GET /api/articles", () => {
     })
   })
 })
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: responds with an array of comments for the given article_id, sorted by date made in descending order. Each comment should have the following properties: comment_id, votes, created_at, author, body, article_id", () => {
+    return request(app)
+    .get('/api/articles/1/comments')
+    .expect(200)
+    .then(({ body }) => {
+      const comments = body.comments;
+      expect(comments.length).toBe(11);
+      expect(comments).toBeSortedBy('created_at', {descending: true});
+      comments.forEach((comment) => {
+        expect(typeof comment.comment_id).toBe('number');
+        expect(typeof comment.votes).toBe('number');
+        expect(typeof comment.created_at).toBe('string');
+        expect(typeof comment.author).toBe('string');
+        expect(typeof comment.body).toBe('string');
+        expect(typeof comment.article_id).toBe('number');
+      })
+    })
+  })
+  test("404: responds with an error message when the article_id does not exist", () => {
+    return request(app)
+    .get('/api/articles/100/comments')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Article not found.');
+    })
+  })
+  test("400: responds with an error message when the article_id is invalid", () => {
+    return request(app)
+    .get('/api/articles/ten/comments')
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid input.');
+    })
+  })
+})
