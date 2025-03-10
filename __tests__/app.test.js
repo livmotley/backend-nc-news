@@ -115,7 +115,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(typeof comment.created_at).toBe('string');
         expect(typeof comment.author).toBe('string');
         expect(typeof comment.body).toBe('string');
-        expect(typeof comment.article_id).toBe('number');
+        expect(comment.article_id).toBe(1);
       })
     })
   })
@@ -130,6 +130,51 @@ describe("GET /api/articles/:article_id/comments", () => {
   test("400: responds with an error message when the article_id is invalid", () => {
     return request(app)
     .get('/api/articles/ten/comments')
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid input.');
+    })
+  })
+})
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: responds with a comment object that has been added to a specific article as indicated by the article_id", () => {
+    return request(app)
+    .post('/api/articles/1/comments')
+    .send({
+      username: "butter_bridge",
+      body: "Great article!"
+    })
+    .expect(201)
+    .then(({ body }) => {
+      const comment = body.comment;
+      expect(comment.article_id).toBe(1);
+      expect(comment.author).toBe('butter_bridge');
+      expect(comment.body).toBe("Great article!");
+      expect(typeof comment.votes).toBe('number');
+      expect(typeof comment.created_at).toBe('string');
+      expect(typeof comment.comment_id).toBe('number');
+    })
+  })
+  test("404: responds with an error message when the article id doesn't exist", () => {
+    return request(app)
+    .post('/api/articles/245/comments')
+    .send({
+      username: "butter_bridge",
+      body: "Great article!"
+    })
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Article not found.');
+    })
+  })
+  test("400: responds with an error message when the article id is invalid", () => {
+    return request(app)
+    .post('/api/articles/two/comments')
+    .send({
+      username: "butter_bridge",
+      body: "Great article!"
+    })
     .expect(400)
     .then(({ body }) => {
       expect(body.msg).toBe('Invalid input.');

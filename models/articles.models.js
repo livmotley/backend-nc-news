@@ -38,3 +38,21 @@ exports.fetchCommentsByArticleId = (article_id) => {
         return rows;
     })
 }
+
+exports.addNewComment = (article_id, author, body) => {
+    return db.query(`
+        SELECT * FROM articles WHERE article_id = $1`, [article_id])
+        .then(({ rows }) => {
+            if(rows.length === 0) {
+                return Promise.reject({status: 404, msg: 'Article not found.'})
+            }
+            return db.query(`
+                INSERT INTO comments 
+                (article_id, author, body, created_at)
+                VALUES ($1, $2, $3, NOW())
+                RETURNING *`, [article_id, author, body])
+        })
+        .then(({ rows }) => {
+            return rows[0];
+        })
+}
