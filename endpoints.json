@@ -28,7 +28,7 @@
   },
   "GET /api/articles/:article_id": {
     "description": "serves an object of one article indicated by the article_id",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": [],
     "exampleResponse": {
       "article": 
         {
