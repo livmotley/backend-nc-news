@@ -41,3 +41,38 @@ describe("GET /api/topics", () => {
     })
   })
 })
+
+describe("GET /api/articles/:article_id", () => {
+  test("200: responds with an object containing the values for the following keys: author, title, article_id, body, topic, created_at, votes, article_img_url", () => {
+    return request(app)
+    .get('/api/articles/3')
+    .expect(200)
+    .then(({ body }) => {
+      const article = body.article;
+      expect(typeof article.author).toBe('string');
+      expect(typeof article.title).toBe('string');
+      expect(article.article_id).toBe(3);
+      expect(typeof article.body).toBe('string');
+      expect(typeof article.topic).toBe('string');
+      expect(typeof article.created_at).toBe('string');
+      expect(typeof article.votes).toBe('number');
+      expect(typeof article.article_img_url).toBe('string');
+    })
+  })
+  test("404: responds with an error message if the article_id does not exist on the database", () => {
+    return request(app)
+    .get('/api/articles/500')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Article not found.');
+    })
+  })
+  test("400: responds with an error message if the article_id is not valid", () => {
+    return request(app)
+    .get('/api/articles/ten')
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid input.');
+    })
+  })
+})
