@@ -79,7 +79,7 @@
     "description": "serves an updated article object with new vote count",
     "queries": [],
     "exampleResponse": {
-      "articles": [
+      "article":
         {
         "article_id": 2,
         "author": "icellusedkars",
@@ -90,7 +90,6 @@
         "body": "Call me Mitchell. Some years ago..",
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         }
-      ]
     }
   }
 }
