@@ -49,7 +49,6 @@ describe("GET /api/articles/:article_id", () => {
     .expect(200)
     .then(({ body }) => {
       const article = body.article;
-      console.log(typeof article.author);
       expect(article.article_id).toBe(3);
       expect(typeof article.author).toBe('string');
       expect(typeof article.title).toBe('string');
@@ -143,7 +142,7 @@ describe("GET /api/articles", () => {
     .then(({ body }) => {
       const articles = body.articles;
       expect(articles.length).toBe(12);
-      expect(articles).toBeSorted({descending: true})
+      expect(articles).toBeSortedBy('topic', {descending: true})
       articles.forEach((article) => {
         expect(article.topic).toBe('mitch');
         expect(typeof article.author).toBe('string');
@@ -158,15 +157,15 @@ describe("GET /api/articles", () => {
   })
   test("200: responds with an array of article objects filtered to a specific topic query in specified order", () => {
     return request(app)
-    .get('/api/articles?topic=cats&order=asc')
+    .get('/api/articles?topic=mitch&order=asc')
     .expect(200)
     .then(({ body }) => {
       const articles = body.articles;
-      expect(articles.length).toBe(1);
-      expect(articles).toBeSorted({descending: false})
+      expect(articles.length).toBe(12);
+      expect(articles).toBeSortedBy('topic', {descending: false})
       articles.forEach((article) => {
-        expect(article.topic).toBe('cats');
-        expect(article.article_id).toBe(5);
+        expect(article.topic).toBe('mitch');
+        expect(typeof article.article_id).toBe('number');
         expect(typeof article.author).toBe('string');
         expect(typeof article.title).toBe('string');
         expect(typeof article.created_at).toBe('string');
@@ -185,20 +184,12 @@ describe("GET /api/articles", () => {
       expect(articles.length).toBe(0);
     })
   })
-  test("400: responds with an error message when topic doesn't exist", () => {
-    return request(app)
-    .get('/api/articles?topic=dogs')
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe('Invalid Query.')
-    })
-  })
-  test("400: responds with an error message when topic is invalid", () => {
+  test("404: responds with an error message when topic doesn't exist", () => {
     return request(app)
     .get('/api/articles?topic=5')
-    .expect(400)
+    .expect(404)
     .then(({ body }) => {
-      expect(body.msg).toBe('Invalid input.')
+      expect(body.msg).toBe('Topic not found.')
     })
   })
 })

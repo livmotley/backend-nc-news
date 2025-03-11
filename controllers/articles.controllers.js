@@ -1,10 +1,10 @@
 const { fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addNewComment, updateVoteCount } = require('../models/articles.models');
+const { checkExists } = require("../db/seeds/utils.js");
 
 exports.getArticleById = (req, res, next) => {
     const { article_id } = req.params;
     fetchArticleById(article_id)
     .then((article) => {
-        console.log(article);
         res.status(200).send({article});
     })
     .catch((err) => {
@@ -14,8 +14,14 @@ exports.getArticleById = (req, res, next) => {
 
 exports.getAllArticles = (req, res, next) => {
     const { sort_by, order, topic } = req.query;
-    fetchAllArticles(sort_by, order, topic)
-    .then((articles) => {
+    let promises = [fetchAllArticles(sort_by, order, topic)];
+    
+    if(topic) {
+        promises.push(checkExists('topics', 'slug', topic, 'Topic'));
+    }
+
+    Promise.all(promises)
+    .then(([articles]) => {
         res.status(200).send({articles});
     })
     .catch((err) => {

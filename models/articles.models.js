@@ -10,7 +10,6 @@ exports.fetchArticleById = (article_id) => {
         WHERE articles.article_id = $1
         GROUP BY articles.article_id`, [article_id])
     .then(({ rows }) => {
-        console.log(rows[0])
         if(rows.length === 0) {
             return Promise.reject({ status: 404, msg: 'Article not found.'});
         }
@@ -21,7 +20,6 @@ exports.fetchArticleById = (article_id) => {
 exports.fetchAllArticles = (sort_by, order, topic) => {
     const whitelistSortOptions = ["votes", "author", "title", "article_id", "topic", "comment_count", "created_at"];
     const whitelistOrderOptions = ["asc", "desc"];
-    const whitelistTopics = ["paper", "cats", "mitch"];
 
     let defaultQuery = `
         SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count 
@@ -31,15 +29,10 @@ exports.fetchAllArticles = (sort_by, order, topic) => {
     let queryValues = [];
 
     if( sort_by && !whitelistSortOptions.includes(sort_by) || 
-    order && !whitelistOrderOptions.includes(order)|| 
-    topic && (/^[A-Za-z]*$/).test(topic) && !whitelistTopics.includes(topic)) {
+    order && !whitelistOrderOptions.includes(order)) {
         return Promise.reject({ status: 400, msg: 'Invalid Query.'})
     }
 
-    if(!(/^[A-Za-z]*$/).test(topic)) {
-        return Promise.reject({status: 400, msg: 'Invalid input.'})
-    } 
-    
     sort_by = sort_by || 'created_at';
     order = order || 'desc';
 
