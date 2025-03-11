@@ -98,6 +98,42 @@ describe("GET /api/articles", () => {
       })
     })
   })
+  test("200: responds with array of article objects sorted by the specified query in default order", () => {
+    return request(app)
+    .get('/api/articles?sort_by=votes')
+    .expect(200)
+    .then(({ body }) => {
+      const articles = body.articles;
+      expect(articles.length).toBe(13);
+      expect(articles).toBeSortedBy('votes', {descending: true});
+    })
+  })
+  test("200: responds with array of article objects sorted by the specified query in specified order", () => {
+    return request(app)
+    .get('/api/articles?sort_by=votes&order=asc')
+    .expect(200)
+    .then(({ body }) => {
+      const articles = body.articles;
+      expect(articles.length).toBe(13);
+      expect(articles).toBeSortedBy('votes', {descending: false});
+    })
+  })
+  test("404: responds with an error message when client has used an invalid query request", () => {
+    return request(app)
+    .get('/api/articles?sort_by=date')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid Query.')
+    })
+  })
+  test("404: responds with an error message when client has used an invalid secondaty query request", () => {
+    return request(app)
+    .get('/api/articles?sort_by=votes&order=oldest')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid Query.')
+    })
+  })
 })
 
 describe("GET /api/articles/:article_id/comments", () => {

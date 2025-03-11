@@ -10,14 +10,27 @@ exports.fetchArticleById = (article_id) => {
     })
 }
 
-exports.fetchAllArticles = () => {
-    return db.query(`
+exports.fetchAllArticles = (sort_by, order) => {
+    const whitelistSortOptions = ["votes", "author", "title", "article_id", "topic", "comment_count", "created_at"];
+    const whitelistOrderOptions = ["asc", "desc"];
+    let defaultQuery = `
         SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count 
         FROM articles
         LEFT JOIN comments 
         ON articles.article_id = comments.article_id
-        GROUP BY articles.article_id
-        ORDER BY articles.created_at DESC`)
+        GROUP BY articles.article_id`
+    let queryValues = [];
+
+    if(sort_by && !whitelistSortOptions.includes(sort_by) || order && !whitelistOrderOptions.includes(order)) {
+        return Promise.reject({ status: 404, msg: 'Invalid Query.'})
+    }
+
+    sort_by = sort_by || 'created_at';
+    order = order || 'desc';
+
+    defaultQuery += ` ORDER BY ${sort_by} ${order}`;
+
+    return db.query(`${defaultQuery}`, queryValues)
     .then(({ rows }) => {
         return rows;
     })
