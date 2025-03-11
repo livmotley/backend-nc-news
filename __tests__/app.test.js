@@ -134,6 +134,71 @@ describe("GET /api/articles", () => {
       expect(body.msg).toBe('Invalid Query.')
     })
   })
+  test("200: responds with an array of article objects filtered to a specific topic query", () => {
+    return request(app)
+    .get('/api/articles?topic=mitch')
+    .expect(200)
+    .then(({ body }) => {
+      const articles = body.articles;
+      expect(articles.length).toBe(12);
+      expect(articles).toBeSorted({descending: true})
+      articles.forEach((article) => {
+        expect(article.topic).toBe('mitch');
+        expect(typeof article.author).toBe('string');
+        expect(typeof article.title).toBe('string');
+        expect(typeof article.article_id).toBe('number');
+        expect(typeof article.created_at).toBe('string');
+        expect(typeof article.votes).toBe('number');
+        expect(typeof article.article_img_url).toBe('string');
+        expect(typeof article.comment_count).toBe('string');
+      })
+    })
+  })
+  test("200: responds with an array of article objects filtered to a specific topic query in specified order", () => {
+    return request(app)
+    .get('/api/articles?topic=cats&order=asc')
+    .expect(200)
+    .then(({ body }) => {
+      const articles = body.articles;
+      expect(articles.length).toBe(1);
+      expect(articles).toBeSorted({descending: false})
+      articles.forEach((article) => {
+        expect(article.topic).toBe('cats');
+        expect(article.article_id).toBe(5);
+        expect(typeof article.author).toBe('string');
+        expect(typeof article.title).toBe('string');
+        expect(typeof article.created_at).toBe('string');
+        expect(typeof article.votes).toBe('number');
+        expect(typeof article.article_img_url).toBe('string');
+        expect(typeof article.comment_count).toBe('string');
+      })
+    })
+  })
+  test("200: responds with an empty array when the topic exists but has no attributed articles", () => {
+    return request(app)
+    .get('/api/articles?topic=paper')
+    .expect(200)
+    .then(({ body }) => {
+      const articles = body.articles;
+      expect(articles.length).toBe(0);
+    })
+  })
+  test("404: responds with an error message when topic doesn't exist", () => {
+    return request(app)
+    .get('/api/articles?topic=dogs')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid Query.')
+    })
+  })
+  test("400: responds with an error message when topic is invalid", () => {
+    return request(app)
+    .get('/api/articles?topic=5')
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid input.')
+    })
+  })
 })
 
 describe("GET /api/articles/:article_id/comments", () => {
