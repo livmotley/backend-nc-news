@@ -98,7 +98,7 @@
     "exampleResponse": {
     }
   },
-  "GET /api/comments": {
+  "GET /api/users": {
     "description": "serves an array of user objects",
     "queries": [],
     "exampleResponse": {
