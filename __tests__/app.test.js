@@ -245,7 +245,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       expect(comment.article_id).toBe(1);
       expect(comment.author).toBe('butter_bridge');
       expect(comment.body).toBe("Great article!");
-      expect(typeof comment.votes).toBe('number');
+      expect(comment.votes).toBe(0);
       expect(typeof comment.created_at).toBe('string');
       expect(typeof comment.comment_id).toBe('number');
     })
@@ -273,6 +273,29 @@ describe("POST /api/articles/:article_id/comments", () => {
     .then(({ body }) => {
       expect(body.msg).toBe('Invalid input.');
     })
+  })
+  test("404: responds with an error message when the user doesn't exist", () => {
+    return request(app)
+    .post('/api/articles/1/comments')
+    .send({
+      username: "anon1",
+      body: "Great article!"
+    })
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('User not found.');
+    }) 
+  })
+  test("404: responds with an error message when the request isn't sufficient", () => {
+    return request(app)
+    .post('/api/articles/1/comments')
+    .send({
+      username: "butter_bridge",
+    })
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid input.');
+    }) 
   })
 })
 

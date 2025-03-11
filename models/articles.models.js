@@ -43,7 +43,7 @@ exports.fetchAllArticles = (sort_by, order, topic) => {
 
     defaultQuery += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
 
-    return db.query(`${defaultQuery}`, queryValues)
+    return db.query(defaultQuery, queryValues)
     .then(({ rows }) => {
         return rows;
     })
@@ -66,17 +66,21 @@ exports.fetchCommentsByArticleId = (article_id) => {
 }
 
 exports.addNewComment = (article_id, author, body) => {
+    if(!body || !author) {
+        return Promise.reject({ status: 404, msg: 'Invalid input.'});
+    }
     return db.query(`
         SELECT * FROM articles WHERE article_id = $1`, [article_id])
         .then(({ rows }) => {
             if(rows.length === 0) {
                 return Promise.reject({status: 404, msg: 'Article not found.'})
+            } else {
+                return db.query(`
+                    INSERT INTO comments 
+                    (article_id, author, body, created_at)
+                    VALUES ($1, $2, $3, NOW())
+                    RETURNING *`, [article_id, author, body])
             }
-            return db.query(`
-                INSERT INTO comments 
-                (article_id, author, body, created_at)
-                VALUES ($1, $2, $3, NOW())
-                RETURNING *`, [article_id, author, body])
         })
         .then(({ rows }) => {
             return rows[0];
