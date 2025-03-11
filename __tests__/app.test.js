@@ -181,3 +181,75 @@ describe("POST /api/articles/:article_id/comments", () => {
     })
   })
 })
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: responds with the updated article object with increased vote count", () => {
+    return request(app)
+    .patch('/api/articles/2')
+    .send({
+      inc_votes: 10
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const article = body.article;
+      expect(article.votes).toBe(10);
+      expect(article.article_id).toBe(2);
+      expect(typeof article.author).toBe('string');
+      expect(typeof article.title).toBe('string');
+      expect(typeof article.topic).toBe('string');
+      expect(typeof article.created_at).toBe('string');
+      expect(typeof article.article_img_url).toBe('string');
+    })
+  })
+  test("200: responds with the updated article object with decreased vote count", () => {
+    return request(app)
+    .patch('/api/articles/2')
+    .send({
+      inc_votes: -100
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const article = body.article;
+      expect(article.votes).toBe(-100);
+      expect(article.article_id).toBe(2);
+      expect(typeof article.author).toBe('string');
+      expect(typeof article.title).toBe('string');
+      expect(typeof article.topic).toBe('string');
+      expect(typeof article.created_at).toBe('string');
+      expect(typeof article.article_img_url).toBe('string');
+    })
+  })
+  test("404: respond with an error message when article_id does not exist", () => {
+    return request(app)
+    .patch('/api/articles/200')
+    .send({
+      inc_votes: -100
+    })
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Article not found.')
+    })
+  })
+  test("400: respond with an error message when article_id is invalid", () => {
+    return request(app)
+    .patch('/api/articles/banana')
+    .send({
+      inc_votes: -100
+    })
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid input.')
+    })
+  })
+  test("400: respond with an error message when request data is invalid", () => {
+    return request(app)
+    .patch('/api/articles/2')
+    .send({
+      inc_votes: 'two'
+    })
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid input.')
+    })
+  })
+})
