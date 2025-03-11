@@ -49,14 +49,16 @@ describe("GET /api/articles/:article_id", () => {
     .expect(200)
     .then(({ body }) => {
       const article = body.article;
+      console.log(typeof article.author);
+      expect(article.article_id).toBe(3);
       expect(typeof article.author).toBe('string');
       expect(typeof article.title).toBe('string');
-      expect(article.article_id).toBe(3);
       expect(typeof article.body).toBe('string');
       expect(typeof article.topic).toBe('string');
       expect(typeof article.created_at).toBe('string');
       expect(typeof article.votes).toBe('number');
       expect(typeof article.article_img_url).toBe('string');
+      expect(typeof article.comment_count).toBe('string');
     })
   })
   test("404: responds with an error message if the article_id does not exist on the database", () => {
@@ -118,18 +120,18 @@ describe("GET /api/articles", () => {
       expect(articles).toBeSortedBy('votes', {descending: false});
     })
   })
-  test("404: responds with an error message when client has used an invalid query request", () => {
+  test("400: responds with an error message when client has used an invalid query request", () => {
     return request(app)
     .get('/api/articles?sort_by=date')
-    .expect(404)
+    .expect(400)
     .then(({ body }) => {
       expect(body.msg).toBe('Invalid Query.')
     })
   })
-  test("404: responds with an error message when client has used an invalid secondaty query request", () => {
+  test("400: responds with an error message when client has used an invalid secondary query request", () => {
     return request(app)
     .get('/api/articles?sort_by=votes&order=oldest')
-    .expect(404)
+    .expect(400)
     .then(({ body }) => {
       expect(body.msg).toBe('Invalid Query.')
     })
@@ -183,10 +185,10 @@ describe("GET /api/articles", () => {
       expect(articles.length).toBe(0);
     })
   })
-  test("404: responds with an error message when topic doesn't exist", () => {
+  test("400: responds with an error message when topic doesn't exist", () => {
     return request(app)
     .get('/api/articles?topic=dogs')
-    .expect(404)
+    .expect(400)
     .then(({ body }) => {
       expect(body.msg).toBe('Invalid Query.')
     })
