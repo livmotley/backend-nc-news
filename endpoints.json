@@ -93,7 +93,7 @@
     }
   },
   "DELETE /api/comments/:comment_id": {
-    "description": "serves no content when successfully deleted comment with specified comment_id",
+    "description": "serves a 204 status code, providing no content when request has successfully deleted comment with specified comment_id",
     "queries": [],
     "exampleResponse": {
     }
