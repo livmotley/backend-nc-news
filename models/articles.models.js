@@ -10,25 +10,37 @@ exports.fetchArticleById = (article_id) => {
     })
 }
 
-exports.fetchAllArticles = (sort_by, order) => {
+exports.fetchAllArticles = (sort_by, order, topic) => {
     const whitelistSortOptions = ["votes", "author", "title", "article_id", "topic", "comment_count", "created_at"];
     const whitelistOrderOptions = ["asc", "desc"];
+    const whitelistTopics = ["paper", "cats", "mitch"];
+
     let defaultQuery = `
         SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count 
         FROM articles
         LEFT JOIN comments 
-        ON articles.article_id = comments.article_id
-        GROUP BY articles.article_id`
+        ON articles.article_id = comments.article_id`
     let queryValues = [];
 
-    if(sort_by && !whitelistSortOptions.includes(sort_by) || order && !whitelistOrderOptions.includes(order)) {
+    if( sort_by && !whitelistSortOptions.includes(sort_by) || 
+    order && !whitelistOrderOptions.includes(order)|| 
+    topic && (/^[A-Za-z]*$/).test(topic) && !whitelistTopics.includes(topic)) {
         return Promise.reject({ status: 404, msg: 'Invalid Query.'})
     }
 
+    if(!(/^[A-Za-z]*$/).test(topic)) {
+        return Promise.reject({status: 400, msg: 'Invalid input.'})
+    } 
+    
     sort_by = sort_by || 'created_at';
     order = order || 'desc';
 
-    defaultQuery += ` ORDER BY ${sort_by} ${order}`;
+    if(topic) {
+        defaultQuery += ` WHERE articles.topic = $1`;
+        queryValues.push(topic);
+    } 
+
+    defaultQuery += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
 
     return db.query(`${defaultQuery}`, queryValues)
     .then(({ rows }) => {
