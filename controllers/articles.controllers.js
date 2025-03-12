@@ -1,4 +1,4 @@
-const { fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addNewComment, updateVoteCount } = require('../models/articles.models');
+const { fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addNewComment, updateVoteCount, addNewArticle } = require('../models/articles.models');
 const { checkExists } = require("../db/seeds/utils.js");
 
 exports.getArticleById = (req, res, next) => {
@@ -61,6 +61,27 @@ exports.patchVoteCount = (req, res, next) => {
     updateVoteCount(article_id, inc_votes)
     .then((article) => {
         res.status(200).send({ article })
+    })
+    .catch((err) => {
+        next(err);
+    })
+}
+
+exports.postNewArticle = (req, res, next) => {
+    const { author, title, body, topic, article_img_url } = req.body;
+    const promises = [
+        checkExists('users', 'username', author, 'Author'),
+        checkExists('topics', 'slug', topic, 'Topic')
+    ]
+    Promise.all(promises)
+    .then(() => {
+        return addNewArticle(author, title, body, topic, article_img_url)
+    })
+    .then((article_id) => {
+        return fetchArticleById(article_id)
+    })
+    .then((article) => {
+        res.status(201).send({ article })
     })
     .catch((err) => {
         next(err);
