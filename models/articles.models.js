@@ -103,8 +103,7 @@ exports.updateVoteCount = (article_id, newVote) => {
 
 exports.addNewArticle = (author, title, body, topic, article_img_url) => {
     if(!body || !author || !title || !topic || !article_img_url ) {
-        console.log('model function 2');
-        return Promise.reject({ status: 404, msg: 'Invalid input.'});
+        return Promise.reject({ status: 400, msg: 'Invalid input.'});
     }
     return db.query(`
         INSERT INTO articles

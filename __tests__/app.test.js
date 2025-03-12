@@ -534,4 +534,19 @@ describe("POST: /api/articles", () => {
       expect(body.msg).toBe('Topic not found.')
     })
   })
+  test("400: responds with an error message if request is invalid", () => {
+    return request(app)
+    .post("/api/articles")
+    .send({
+      author: "icellusedkars",
+      title: "Top Reads of 2024",
+      body: null,
+      topic: "paper",
+      article_img_url: "https://www.pexels.com/photo/books-in-black-wooden-book-shelf-159711/"
+    })
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid input.')
+    })
+  })
 })
