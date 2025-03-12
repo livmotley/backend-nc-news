@@ -11,8 +11,9 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles which can be sorted by the following queries",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": ["author", "topic", "sort_by", "order", "limit", "p"],
     "exampleResponse": {
+      "total_count": 13,
       "articles": [
         {
           "title": "Seafood substitutions are increasing",

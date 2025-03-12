@@ -13,16 +13,16 @@ exports.getArticleById = (req, res, next) => {
 }
 
 exports.getAllArticles = (req, res, next) => {
-    const { sort_by, order, topic } = req.query;
-    let promises = [fetchAllArticles(sort_by, order, topic)];
+    const { sort_by, order, topic, limit, p } = req.query;
+    let promises = [fetchAllArticles(sort_by, order, topic, limit, p)];
     
     if(topic) {
         promises.push(checkExists('topics', 'slug', topic, 'Topic'));
     }
 
     Promise.all(promises)
-    .then(([articles]) => {
-        res.status(200).send({articles});
+    .then(([articlesData]) => {
+        res.status(200).send(articlesData);
     })
     .catch((err) => {
         next(err);
