@@ -100,3 +100,18 @@ exports.updateVoteCount = (article_id, newVote) => {
             return rows[0];
         })
 }
+
+exports.addNewArticle = (author, title, body, topic, article_img_url) => {
+    if(!body || !author || !title || !topic || !article_img_url ) {
+        console.log('model function 2');
+        return Promise.reject({ status: 404, msg: 'Invalid input.'});
+    }
+    return db.query(`
+        INSERT INTO articles
+        (author, title, body, topic, article_img_url)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING *`, [author, title, body, topic, article_img_url])
+        .then(({ rows }) => {
+            return rows[0].article_id;
+        })
+}

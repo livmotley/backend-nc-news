@@ -478,3 +478,60 @@ describe("PATCH: /api/comments/:comment_id", () =>{
     })
   })
 })
+
+describe("POST: /api/articles", () => {
+  test("201: responds with an article object of the newly added article with properties: author, title, body, topic, article_img_url, article_id, votes, created_at, comment_count", () => {
+    return request(app)
+    .post("/api/articles")
+    .send({
+      author: "icellusedkars",
+      title: "Writing a test for a POST Method",
+      body: "This article will show you how to write a test for a POST Method using Node.js in JavaScript",
+      topic: "paper",
+      article_img_url: "https://www.pexels.com/photo/person-encoding-in-laptop-574071/"
+    })
+    .expect(201)
+    .then(({ body }) => {
+      const article = body.article;
+      expect(article.created_at).toBe(null);
+      expect(article.article_id).toBe(14);
+      expect(article.author).toBe("icellusedkars");
+      expect(article.title).toBe("Writing a test for a POST Method");
+      expect(article.body).toBe("This article will show you how to write a test for a POST Method using Node.js in JavaScript");
+      expect(article.topic).toBe("paper");
+      expect(article.article_img_url).toBe("https://www.pexels.com/photo/person-encoding-in-laptop-574071/");
+      expect(article.votes).toBe(0);
+      expect(article.comment_count).toBe('0');
+    })
+  })
+  test("404: responds with an error message if the user does not exist", () => {
+    return request(app)
+    .post("/api/articles")
+    .send({
+      author: "Liv Motley",
+      title: "Top Reads of 2024",
+      body: "Books you need to read in 2025",
+      topic: "paper",
+      article_img_url: "https://www.pexels.com/photo/books-in-black-wooden-book-shelf-159711/"
+    })
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Author not found.')
+    })
+  })
+  test("404: responds with an error message if the topic does not exist", () => {
+    return request(app)
+    .post("/api/articles")
+    .send({
+      author: "icellusedkars",
+      title: "Top Reads of 2024",
+      body: "Books you need to read in 2025",
+      topic: "books",
+      article_img_url: "https://www.pexels.com/photo/books-in-black-wooden-book-shelf-159711/"
+    })
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Topic not found.')
+    })
+  })
+})
