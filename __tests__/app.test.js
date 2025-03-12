@@ -85,7 +85,9 @@ describe("GET /api/articles", () => {
     .expect(200)
     .then(({ body }) => {
       const articles = body.articles;
-      expect(articles.length).toBe(13);
+      const total_count = body.total_count;
+      expect(total_count).toBe('13');
+      expect(articles.length).toBe(10);
       expect(articles).toBeSortedBy('created_at', {descending: true});
       articles.forEach((article) => {
         expect(typeof article.author).toBe('string');
@@ -105,7 +107,9 @@ describe("GET /api/articles", () => {
     .expect(200)
     .then(({ body }) => {
       const articles = body.articles;
-      expect(articles.length).toBe(13);
+      const total_count = body.total_count;
+      expect(total_count).toBe('13');
+      expect(articles.length).toBe(10);
       expect(articles).toBeSortedBy('votes', {descending: true});
     })
   })
@@ -115,7 +119,9 @@ describe("GET /api/articles", () => {
     .expect(200)
     .then(({ body }) => {
       const articles = body.articles;
-      expect(articles.length).toBe(13);
+      const total_count = body.total_count;
+      expect(total_count).toBe('13');
+      expect(articles.length).toBe(10);
       expect(articles).toBeSortedBy('votes', {descending: false});
     })
   })
@@ -141,8 +147,10 @@ describe("GET /api/articles", () => {
     .expect(200)
     .then(({ body }) => {
       const articles = body.articles;
-      expect(articles.length).toBe(12);
+      expect(articles.length).toBe(10);
       expect(articles).toBeSortedBy('topic', {descending: true})
+      const total_count = body.total_count;
+      expect(total_count).toBe('12');
       articles.forEach((article) => {
         expect(article.topic).toBe('mitch');
         expect(typeof article.author).toBe('string');
@@ -161,7 +169,9 @@ describe("GET /api/articles", () => {
     .expect(200)
     .then(({ body }) => {
       const articles = body.articles;
-      expect(articles.length).toBe(12);
+      const total_count = body.total_count;
+      expect(total_count).toBe('12');
+      expect(articles.length).toBe(10);
       expect(articles).toBeSortedBy('topic', {descending: false})
       articles.forEach((article) => {
         expect(article.topic).toBe('mitch');
@@ -181,6 +191,8 @@ describe("GET /api/articles", () => {
     .expect(200)
     .then(({ body }) => {
       const articles = body.articles;
+      const total_count = body.total_count;
+      expect(total_count).toBe('0');
       expect(articles.length).toBe(0);
     })
   })
@@ -190,6 +202,91 @@ describe("GET /api/articles", () => {
     .expect(404)
     .then(({ body }) => {
       expect(body.msg).toBe('Topic not found.')
+    })
+  })
+  test("200: responds with an array of articles limited to the default amount", () => {
+    return request(app)
+    .get('/api/articles')
+    .expect(200)
+    .then(({ body }) => {
+      const articles = body.articles;
+      const total_count = body.total_count;
+      expect(total_count).toBe('13');
+      expect(articles.length).toBe(10);
+      articles.forEach((article) => {
+        expect(typeof article.topic).toBe('string');
+        expect(typeof article.article_id).toBe('number');
+        expect(typeof article.author).toBe('string');
+        expect(typeof article.title).toBe('string');
+        expect(typeof article.created_at).toBe('string');
+        expect(typeof article.votes).toBe('number');
+        expect(typeof article.article_img_url).toBe('string');
+        expect(typeof article.comment_count).toBe('string');
+      })  
+    })
+  })
+  test("200: responds with an array of articles limited to the requested amount", () => {
+    return request(app)
+    .get('/api/articles?limit=6')
+    .expect(200)
+    .then(({ body }) => {
+      const articles = body.articles;
+      const total_count = body.total_count;
+      expect(total_count).toBe('13');
+      expect(articles.length).toBe(6);
+      articles.forEach((article) => {
+        expect(typeof article.topic).toBe('string');
+        expect(typeof article.article_id).toBe('number');
+        expect(typeof article.author).toBe('string');
+        expect(typeof article.title).toBe('string');
+        expect(typeof article.created_at).toBe('string');
+        expect(typeof article.votes).toBe('number');
+        expect(typeof article.article_img_url).toBe('string');
+        expect(typeof article.comment_count).toBe('string');
+      })  
+    })
+  })
+  test("200: responds with an array of articles starting at specified page", () => {
+    return request(app)
+    .get('/api/articles?limit=3&p=2')
+    .expect(200)
+    .then(({ body }) => {
+      const articles = body.articles;
+      const total_count = body.total_count;
+      expect(total_count).toBe('13');
+      expect(articles.length).toBe(3);
+      expect(articles[0].article_id).toBe(13);
+      articles.forEach((article) => {
+        expect(typeof article.topic).toBe('string');
+        expect(typeof article.article_id).toBe('number');
+        expect(typeof article.author).toBe('string');
+        expect(typeof article.title).toBe('string');
+        expect(typeof article.created_at).toBe('string');
+        expect(typeof article.votes).toBe('number');
+        expect(typeof article.article_img_url).toBe('string');
+        expect(typeof article.comment_count).toBe('string');
+      })  
+    })
+  })
+  test("200: responds with an array of articles starting at specified page with default limit", () => {
+    return request(app)
+    .get('/api/articles?p=2')
+    .expect(200)
+    .then(({ body }) => {
+      const articles = body.articles;
+      const total_count = body.total_count;
+      expect(total_count).toBe('13');
+      expect(articles[0].article_id).toBe(8);
+      articles.forEach((article) => {
+        expect(typeof article.topic).toBe('string');
+        expect(typeof article.article_id).toBe('number');
+        expect(typeof article.author).toBe('string');
+        expect(typeof article.title).toBe('string');
+        expect(typeof article.created_at).toBe('string');
+        expect(typeof article.votes).toBe('number');
+        expect(typeof article.article_img_url).toBe('string');
+        expect(typeof article.comment_count).toBe('string');
+      })  
     })
   })
 })

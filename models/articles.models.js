@@ -17,35 +17,60 @@ exports.fetchArticleById = (article_id) => {
     })
 }
 
-exports.fetchAllArticles = (sort_by, order, topic) => {
+exports.fetchAllArticles = (sort_by, order, topic, limit, p) => {
     const whitelistSortOptions = ["votes", "author", "title", "article_id", "topic", "comment_count", "created_at"];
     const whitelistOrderOptions = ["asc", "desc"];
-
     let defaultQuery = `
         SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count 
         FROM articles
         LEFT JOIN comments 
         ON articles.article_id = comments.article_id`
     let queryValues = [];
-
+    let countQuery = `SELECT COUNT(*) AS total_count FROM articles`;
+    
     if( sort_by && !whitelistSortOptions.includes(sort_by) || 
     order && !whitelistOrderOptions.includes(order)) {
         return Promise.reject({ status: 400, msg: 'Invalid Query.'})
     }
-
+    
     sort_by = sort_by || 'created_at';
     order = order || 'desc';
-
+    
     if(topic) {
         defaultQuery += ` WHERE articles.topic = $1`;
+        countQuery += ` WHERE articles.topic = $1`
         queryValues.push(topic);
     } 
-
+    
     defaultQuery += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+    
+    const numLimit = Number(limit);
+    const numPage = Number(p);
+    let x = 10;
+    let y = ((numPage - 1) * x);
+    
+    if(!limit && !p) {
+        defaultQuery += ` LIMIT ${x}`
+    } else if(limit && !p) {
+        defaultQuery += ` LIMIT ${numLimit}`
+    }
+    
+    if(p && !limit) {
+        defaultQuery += ` LIMIT ${x} OFFSET ${y}`
+    } else if(p && limit) {
+        y = ((numPage - 1) * numLimit);
+        defaultQuery += ` LIMIT ${numLimit} OFFSET ${y}`
+    }
 
-    return db.query(defaultQuery, queryValues)
-    .then(({ rows }) => {
-        return rows;
+    return Promise.all([
+        db.query(countQuery, queryValues),
+        db.query(defaultQuery, queryValues)
+    ])
+    .then(([count, articleArray]) => {
+        return {
+            total_count: count.rows[0].total_count,
+            articles: articleArray.rows
+        }
     })
 }
 
