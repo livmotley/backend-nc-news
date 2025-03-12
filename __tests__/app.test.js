@@ -414,3 +414,25 @@ describe("GET /api/users", () => {
     })
   })
 })
+
+describe("GET: /api/users/:username", () => {
+  test("200: responds with a user object with properties of username, avatar_url, name", () =>{
+    return request(app)
+    .get("/api/users/rogersop")
+    .expect(200)
+    .then(({ body }) => {
+      const user = body.user;
+      expect(user.username).toBe("rogersop");
+      expect(user.avatar_url).toBe("https://avatars2.githubusercontent.com/u/24394918?s=400&v=4");
+      expect(user.name).toBe("paul");
+    })
+  })
+  test("404: responds with an error message when the user doesn't exist", () => {
+    return request(app)
+    .get("/api/users/livmotley")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("User not found.")
+    })
+  })
+})
