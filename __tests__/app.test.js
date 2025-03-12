@@ -436,3 +436,45 @@ describe("GET: /api/users/:username", () => {
     })
   })
 })
+
+describe("PATCH: /api/comments/:comment_id", () =>{
+  test("200: responds with a comment object with updated vote count which has been altered via the client request", () => {
+    return request(app)
+    .patch("/api/comments/2")
+    .send({
+      inc_votes: 2
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const comment = body.comment;
+      expect(comment.comment_id).toBe(2);
+      expect(comment.article_id).toBe(1);
+      expect(comment.body).toBe("The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.");
+      expect(comment.votes).toBe(16);
+      expect(comment.author).toBe("butter_bridge");
+      expect(typeof comment.created_at).toBe('string');
+    })
+  })
+  test("400: responds with an error message when the newVote is invalid", () => {
+    return request(app)
+    .patch("/api/comments/2")
+    .send({
+      inc_votes: 'two'
+    })
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid input.')
+    })
+  })
+  test("404: responds with an error message when the comment doesn't exist", () => {
+    return request(app)
+    .patch("/api/comments/100")
+    .send({
+      inc_votes: 2
+    })
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Comment not found.')
+    })
+  })
+})
