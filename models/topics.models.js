@@ -42,3 +42,25 @@ exports.removeTopic = (slug) => {
             return rows[0];
         })
 }
+
+exports.updateTopic = (slug, description, img_url) => {
+    let query = `UPDATE topics`
+    let values = []
+
+    if(description && !img_url) {
+        query += ` SET description = $1 WHERE slug = $2 RETURNING *`
+        values.push(description, slug)
+    } else if(!description && img_url) {
+        query += ` SET img_url = $1 WHERE slug = $2 RETURNING *`
+        values.push(img_url, slug)
+    } else if(description && img_url) {
+        query += ` SET description = $1, img_url = $2 
+        WHERE slug = $3 RETURNING *`;
+        values.push(description, img_url, slug);
+    }
+
+    return db.query(query, values)
+    .then(({ rows }) => {
+        return rows[0];
+    })
+}

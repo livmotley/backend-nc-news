@@ -930,3 +930,57 @@ describe("DELETE: /api/topics/:slug", () => {
     })
   })
 })
+
+describe("PATCH: /api/topics/:slug", () => {
+  test("200: returns updated topic object for description only", () => {
+    return request(app)
+    .patch('/api/topics/paper')
+    .send({
+      description: "updated description"
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const topic = body.topic;
+      expect(topic.description).toBe("updated description");
+      expect(topic.slug).toBe("paper");
+      expect(topic.img_url).toBe("");
+    })
+  })
+  test("200: returns updated topic object for img_url only", () => {
+    return request(app)
+    .patch('/api/topics/paper')
+    .send({
+      img_url: "https://unsplash.com/photos/a-close-up-of-a-piece-of-white-paper-nW3XR5c1aCg"
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const topic = body.topic;
+      expect(topic.description).toBe("what books are made of");
+      expect(topic.slug).toBe("paper");
+      expect(topic.img_url).toBe("https://unsplash.com/photos/a-close-up-of-a-piece-of-white-paper-nW3XR5c1aCg");
+    })
+  })
+  test("200: returns updated topic object for both properties", () => {
+    return request(app)
+    .patch('/api/topics/paper')
+    .send({
+      description: "updated description",
+      img_url: "https://unsplash.com/photos/a-close-up-of-a-piece-of-white-paper-nW3XR5c1aCg"
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const topic = body.topic;
+      expect(topic.description).toBe("updated description");
+      expect(topic.slug).toBe("paper");
+      expect(topic.img_url).toBe("https://unsplash.com/photos/a-close-up-of-a-piece-of-white-paper-nW3XR5c1aCg");
+    })
+  })
+  test("404: responds with an error message if the topic doesn't exist", () => {
+    return request(app)
+    .delete('/api/topics/books')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Topic not found.')
+    })
+  })
+})
