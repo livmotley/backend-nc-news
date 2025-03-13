@@ -13,12 +13,11 @@ exports.getAllUsers = (req, res, next) => {
 
 exports.getSpecificUser = (req, res, next) => {
     const { username } = req.params;
-    const promises = [
-        checkExists('users', 'username', username, 'User'),
-        fetchSpecificUser(username)
-    ]
-    Promise.all(promises)
-    .then(([_, user]) => {
+    checkExists('users', 'username', username, 'User')
+    .then(() => {
+        return fetchSpecificUser(username)
+    })
+    .then((user) => {
         res.status(200).send({user})
     })
     .catch((err) => {
