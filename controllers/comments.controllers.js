@@ -30,8 +30,8 @@ exports.patchCommentVote = (req, res, next) => {
 }
 
 exports.getAllComments = (req, res, next) => {
-    const { limit, p } = req.query;
-    fetchAllComments(limit, p)
+    const { limit, p, sort_by, order } = req.query;
+    fetchAllComments(limit, p, sort_by, order )
     .then((comments) => {
         res.status(200).send({comments});
     })

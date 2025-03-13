@@ -843,7 +843,41 @@ describe("GET: /api/comments", () => {
     .then(({ body }) => {
       const comments = body.comments;
       expect(comments.length).toBe(3);
-      expect(comments[0].comment_id).toBe(7);
+      expect(comments[0].comment_id).toBe(10);
+      comments.forEach((comment) => {
+        expect(typeof comment.comment_id).toBe('number');
+        expect(typeof comment.article_id).toBe('number');
+        expect(typeof comment.body).toBe('string');
+        expect(typeof comment.votes).toBe('number');
+        expect(typeof comment.author).toBe('string');
+        expect(typeof comment.created_at).toBe('string');
+      })
+    })
+  })
+  test("200: responds with comments sorted by a specified category and order", () => {
+    return request(app)
+    .get('/api/comments?sort_by=votes&order=asc')
+    .expect(200)
+    .then(({ body }) => {
+      const comments = body.comments;
+      expect(comments).toBeSortedBy('votes', {descending: false});
+      comments.forEach((comment) => {
+        expect(typeof comment.comment_id).toBe('number');
+        expect(typeof comment.article_id).toBe('number');
+        expect(typeof comment.body).toBe('string');
+        expect(typeof comment.votes).toBe('number');
+        expect(typeof comment.author).toBe('string');
+        expect(typeof comment.created_at).toBe('string');
+      })
+    })
+  })
+  test("200: responds with comments sorted by default sort and order", () => {
+    return request(app)
+    .get('/api/comments')
+    .expect(200)
+    .then(({ body }) => {
+      const comments = body.comments;
+      expect(comments).toBeSortedBy('created_at', {descending: true});
       comments.forEach((comment) => {
         expect(typeof comment.comment_id).toBe('number');
         expect(typeof comment.article_id).toBe('number');

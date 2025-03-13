@@ -23,10 +23,15 @@ exports.updateCommentVote = (comment_id, inc_votes) => {
         })
 }
 
-exports.fetchAllComments = (limit, p) => {
+exports.fetchAllComments = (limit, p, sort_by, order ) => {
     let queryStr = `SELECT * FROM comments`
     let queryValues = [];
     let totalComments = `SELECT COUNT(*) AS total_comments FROM comments`;
+
+    sort_by = sort_by || 'created_at';
+    order = order || 'desc';
+
+    queryStr += ` ORDER BY ${sort_by} ${order}`
 
     limit = Number(limit) || 10;
     let y = ((Number(p) - 1) * limit);

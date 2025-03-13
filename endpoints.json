@@ -178,7 +178,7 @@
   },
   "GET: /api/comments": {
     "description": "serves an array of comments",
-    "queries": ["limit", "p"],
+    "queries": ["limit", "p", "sort_by", "order"],
     "exampleResponse": {
       "comments": [
         {
