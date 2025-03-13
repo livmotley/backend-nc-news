@@ -2,7 +2,8 @@ const { fetchAllTopics, addNewTopic, fetchTopicBySlug, removeTopic, updateTopic 
 const { checkExists, checkForDuplicates } = require("../db/seeds/utils.js");
 
 exports.getAllTopics = (req, res, next) => {
-    fetchAllTopics()
+    const { limit, p, sort_by, order } = req.query;
+    fetchAllTopics(limit, p, sort_by, order)
     .then((topics) => {
         res.status(200).send({ topics })
     })

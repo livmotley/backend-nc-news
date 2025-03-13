@@ -33,11 +33,21 @@ describe("GET /api/topics", () => {
       const topics = body.topics
       expect(topics).toHaveLength(3);
       expect(Array.isArray(topics)).toBe(true);
+      expect(topics).toBeSortedBy('slug', {descending: false});
       topics.forEach((topic) => {
         expect(typeof topic.description).toBe('string');
         expect(typeof topic.slug).toBe('string');
         expect(typeof topic.img_url).toBe('string');
       })
+    })
+  })
+  test("200: responds with an array of topics sorted in specified order and by category", () => {
+    return request(app)
+    .get("/api/topics?sort_by=description&order=desc")
+    .expect(200)
+    .then(({ body }) => {
+      const topics = body.topics;
+      expect(topics).toBeSortedBy('description', {descending: true});
     })
   })
 })
