@@ -169,5 +169,11 @@
           "img_url": ""
         }
     }
+  },
+  "DELETE: /api/articles/:article_id": {
+    "description": "serves a 204 status code, providing no content when request has successfully deleted article and corresponding comments",
+    "queries": [],
+    "exampleResponse": {
+    }
   }
 }
