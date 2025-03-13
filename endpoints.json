@@ -221,5 +221,11 @@
         "img_url": ""
         }
     }
+  },
+  "DELETE: /api/users/:username": {
+    "description": "serves a 204 status code, providing no content when request has successfully deleted the user and corresponding comments and articles",
+    "queries": [],
+    "exampleResponse": {
+    }
   }
 }

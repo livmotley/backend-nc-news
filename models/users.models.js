@@ -60,3 +60,13 @@ exports.fetchSpecificUser = (username) => {
             return rows[0];
         })
 }
+
+exports.removeUser = (username) => {
+    return db.query(`
+        DELETE FROM users
+        WHERE username = $1
+        RETURNING *`, [username])
+        .then(({ rows }) => {
+            return rows[0]
+        })
+}

@@ -1004,3 +1004,22 @@ describe("PATCH: /api/topics/:slug", () => {
     })
   })
 })
+
+describe("DELETE: /api/users/:username", () => {
+  test("204: responds with no content when a user is successfully deleted", () => {
+    return request(app)
+    .delete('/api/users/icellusedkars')
+    .expect(204)
+    .then(({ body }) => {
+      expect(Object.keys(body).length).toBe(0)
+    })
+  })
+  test("404: responds with an error message if the user does not exist", () => {
+    return request(app)
+    .delete('/api/users/livmotley')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('User not found.')
+    })
+  })
+})
