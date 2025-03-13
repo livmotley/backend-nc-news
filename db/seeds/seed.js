@@ -63,7 +63,7 @@ function createArticles() {
 function createComments() {
   return db.query(`CREATE TABLE comments(
     comment_id SERIAL PRIMARY KEY,
-    article_id INT REFERENCES articles(article_id),
+    article_id INT REFERENCES articles(article_id) ON DELETE CASCADE,
     body TEXT NOT NULL,
     votes INT DEFAULT 0,
     author VARCHAR(40) REFERENCES users(username),

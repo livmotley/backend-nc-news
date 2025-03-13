@@ -167,3 +167,13 @@ exports.addNewArticle = (author, title, body, topic, article_img_url) => {
             return rows[0].article_id;
         })
 }
+
+exports.removeArticleId = (article_id) => {
+    return db.query(`
+        DELETE FROM articles
+        WHERE article_id = $1
+        RETURNING *`, [article_id])
+        .then(({ rows }) => {
+            return rows;
+        })
+}

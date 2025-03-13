@@ -1,4 +1,4 @@
-const { fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addNewComment, updateVoteCount, addNewArticle } = require('../models/articles.models');
+const { fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addNewComment, updateVoteCount, addNewArticle, removeArticleId } = require('../models/articles.models');
 const { checkExists, checkDataType } = require("../db/seeds/utils.js");
 
 exports.getArticleById = (req, res, next) => {
@@ -93,6 +93,21 @@ exports.postNewArticle = (req, res, next) => {
     })
     .then((article) => {
         res.status(201).send({ article })
+    })
+    .catch((err) => {
+        next(err);
+    })
+}
+
+exports.deleteArticleId = (req, res, next) => {
+    const { article_id } = req.params;
+    checkExists('articles', 'article_id', article_id, 'Article')
+    .then(() => {
+        // console.log('made to model in controller')
+        return removeArticleId(article_id)
+    })
+    .then(() => {
+        res.status(204).send()
     })
     .catch((err) => {
         next(err);

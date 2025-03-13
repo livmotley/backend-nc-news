@@ -756,3 +756,30 @@ describe("POST: /api/topics", () => {
     })
   })
 })
+
+describe("DELETE: /api/articles/:article_id", () => {
+  test("204: responds with no content with specified article is successfully deleted alongside its respective comments", () => {
+    return request(app)
+    .delete("/api/articles/1")
+    .expect(204)
+    .then(({ body }) => {
+      expect(Object.keys(body).length).toBe(0);
+    })
+  })
+  test("404: responds with error message when article doesn't exist", () => {
+    return request(app)
+    .delete("/api/articles/400")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Article not found.')
+    })
+  })
+  test("400: responds with error message when article is invalid", () => {
+    return request(app)
+    .delete("/api/articles/four")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid input.')
+    })
+  })
+})
