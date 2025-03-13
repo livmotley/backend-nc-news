@@ -292,13 +292,13 @@ describe("GET /api/articles", () => {
 })
 
 describe("GET /api/articles/:article_id/comments", () => {
-  test("200: responds with an array of comments for the given article_id, sorted by date made in descending order. Each comment should have the following properties: comment_id, votes, created_at, author, body, article_id", () => {
+  test("200: responds with an array of comments for the given article_id, sorted by date made in descending order. Each comment should have the following properties: comment_id, votes, created_at, author, body, article_id, limited to the default length (10)", () => {
     return request(app)
     .get('/api/articles/1/comments')
     .expect(200)
     .then(({ body }) => {
       const comments = body.comments;
-      expect(comments.length).toBe(11);
+      expect(comments.length).toBe(10);
       expect(comments).toBeSortedBy('created_at', {descending: true});
       comments.forEach((comment) => {
         expect(typeof comment.comment_id).toBe('number');
@@ -324,6 +324,74 @@ describe("GET /api/articles/:article_id/comments", () => {
     .expect(400)
     .then(({ body }) => {
       expect(body.msg).toBe('Invalid input.');
+    })
+  })
+  test("200: responds with an array of comment objects limited in length as specified in the query", () => {
+    return request(app)
+    .get('/api/articles/1/comments?limit=2')
+    .expect(200)
+    .then(({ body }) => {
+      const comments = body.comments;
+      expect(comments.length).toBe(2);
+      comments.forEach((comment) => {
+        expect(typeof comment.comment_id).toBe('number');
+        expect(typeof comment.votes).toBe('number');
+        expect(typeof comment.created_at).toBe('string');
+        expect(typeof comment.author).toBe('string');
+        expect(typeof comment.body).toBe('string');
+        expect(comment.article_id).toBe(1);
+      })
+    })
+  })
+  test("200: responds with an array of comment objects starting from a specified page", () => {
+    return request(app)
+    .get('/api/articles/1/comments?p=2')
+    .expect(200)
+    .then(({ body }) => {
+      const comments = body.comments;
+      expect(comments.length).toBe(1);
+      comments.forEach((comment) => {
+        expect(comment.comment_id).toBe(9);
+        expect(typeof comment.votes).toBe('number');
+        expect(typeof comment.created_at).toBe('string');
+        expect(typeof comment.author).toBe('string');
+        expect(typeof comment.body).toBe('string');
+        expect(comment.article_id).toBe(1);
+      })
+    })
+  })
+  test("200: responds with an array of comment objects starting from a specified page and limited to specified length", () => {
+    return request(app)
+    .get('/api/articles/1/comments?limit=3&p=3')
+    .expect(200)
+    .then(({ body }) => {
+      const comments = body.comments;
+      expect(comments.length).toBe(3);
+      expect(comments[0].comment_id).toBe(6);
+      comments.forEach((comment) => {
+        expect(typeof comment.comment_id).toBe('number');
+        expect(typeof comment.votes).toBe('number');
+        expect(typeof comment.created_at).toBe('string');
+        expect(typeof comment.author).toBe('string');
+        expect(typeof comment.body).toBe('string');
+        expect(typeof comment.article_id).toBe('number');
+      })
+    })
+  })
+  test("404: responds with an error message when the specified page number doesn't exist", () => {
+    return request(app)
+    .get('/api/articles/1/comments?p=5')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Page not found.')
+    })
+  })
+  test("400: responds with an error message when the query is invalid", () => {
+    return request(app)
+    .get('/api/articles/1/comments?limit=five')
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid input.')
     })
   })
 })

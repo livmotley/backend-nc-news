@@ -1,5 +1,5 @@
 const { fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addNewComment, updateVoteCount, addNewArticle } = require('../models/articles.models');
-const { checkExists } = require("../db/seeds/utils.js");
+const { checkExists, checkDataType } = require("../db/seeds/utils.js");
 
 exports.getArticleById = (req, res, next) => {
     const { article_id } = req.params;
@@ -31,7 +31,18 @@ exports.getAllArticles = (req, res, next) => {
 
 exports.getCommentsByArticleId = (req, res, next) => {
     const { article_id } = req.params;
-    fetchCommentsByArticleId(article_id)
+    const { limit, p } = req.query;
+    let promises = [];
+    if(limit) {
+        promises.push(checkDataType(limit));
+    }
+    if(p) {
+        promises.push(checkDataType(p));
+    }
+    Promise.all(promises)
+    .then(() => {
+        return fetchCommentsByArticleId(article_id, limit, p)
+    })
     .then((comments) => {
         res.status(200).send({comments})
     })
