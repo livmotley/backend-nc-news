@@ -74,16 +74,44 @@ exports.fetchAllArticles = (sort_by, order, topic, limit, p) => {
     })
 }
 
-exports.fetchCommentsByArticleId = (article_id) => {
-    return db.query(`
-        SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id
-        FROM comments
-        LEFT JOIN articles
-        ON articles.article_id = comments.article_id
-        WHERE comments.article_id = $1
-        ORDER BY comments.created_at DESC`, [article_id])
-    .then(({ rows }) => {
-        if(rows.length === 0) {
+exports.fetchCommentsByArticleId = (article_id, limit, p) => {
+    let queryStr = `
+    SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id
+    FROM comments
+    LEFT JOIN articles
+    ON articles.article_id = comments.article_id
+    WHERE comments.article_id = $1
+    ORDER BY comments.created_at DESC`;
+    let queryValues = [article_id];
+    let totalComments = `SELECT COUNT(*) AS total_comments FROM comments`
+
+    limit = Number(limit) || 10;
+    let y = ((Number(p) - 1) * limit);
+
+    return db.query(totalComments)
+    .then(({rows}) => {
+        if((limit * (Number(p) - 1)) > rows[0].total_comments) {
+            return Promise.reject({status: 404, msg: 'Page not found.'})
+        }
+        else {
+            if(limit && !p) {
+                queryStr += ` LIMIT $2`
+                queryValues.push(limit);
+            } else if (limit === 10 && p) {
+                queryStr += ` LIMIT $2 OFFSET $3`;
+                queryValues.push(limit, y);
+            } else if(limit && p) {
+                queryStr += ` LIMIT $2 OFFSET $3`;
+                queryValues.push(limit, y)
+            } else if(!limit && !p) {
+                queryStr += ` LIMIT $2`;
+                queryValues.push(limit);
+            }
+        }
+    }).then(() => {
+        return db.query(queryStr, queryValues)
+    }).then(({rows}) => {
+        if(rows.length === 0 ) {
             return Promise.reject({status: 404, msg: 'Article not found.'})
         }
         return rows;

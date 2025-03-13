@@ -26,4 +26,12 @@ function checkExists(table, column, value, item) {
     })
 }
 
-module.exports = { createRefObject, convertTimestampToDate, checkExists };
+function checkDataType(data) {
+  const regex = /^\d+$/;
+  const check = regex.test(data);
+  if(!check) {
+    return Promise.reject({status: 400, msg: 'Invalid input.'})
+  }
+}
+
+module.exports = { createRefObject, convertTimestampToDate, checkExists, checkDataType };
