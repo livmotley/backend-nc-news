@@ -102,7 +102,7 @@
   },
   "GET /api/users": {
     "description": "serves an array of user objects",
-    "queries": [],
+    "queries": ["limit", "p", "sort_by", "order"],
     "exampleResponse": {
       "users": [
         {

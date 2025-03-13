@@ -2,7 +2,8 @@ const { checkExists } = require("../db/seeds/utils.js");
 const { fetchAllUsers, fetchSpecificUser } = require("../models/users.models.js");
 
 exports.getAllUsers = (req, res, next) => {
-    fetchAllUsers()
+    const { sort_by, order, limit, p } = req.query;
+    fetchAllUsers(sort_by, order, limit, p)
     .then((users) => {
         res.status(200).send({users})
     })

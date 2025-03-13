@@ -581,11 +581,21 @@ describe("GET /api/users", () => {
     .then(({ body }) => {
       const users = body.users;
       expect(users.length).toBe(4);
+      expect(users).toBeSortedBy('username', {descending: false});
       users.forEach((user) => {
         expect(typeof user.username).toBe('string');
         expect(typeof user.name).toBe('string');
         expect(typeof user.avatar_url).toBe('string');
       })
+    })
+  })
+  test("200: responds with an array of users sorted in specified order and by category", () => {
+    return request(app)
+    .get("/api/users?sort_by=name&order=desc")
+    .expect(200)
+    .then(({ body }) => {
+      const users = body.users;
+      expect(users).toBeSortedBy('name', {descending: true});
     })
   })
 })
