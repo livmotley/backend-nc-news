@@ -715,3 +715,44 @@ describe("POST: /api/articles", () => {
     })
   })
 })
+
+describe("POST: /api/topics", () => {
+  test("201: responds with a topic object of the newly added topic requested by the client", () => {
+    return request(app)
+    .post("/api/topics")
+    .send({
+      slug: "books",
+      description: "book recommendations, new releases and reviews"
+    })
+    .expect(201)
+    .then(({ body }) => {
+      const topic = body.topic;
+      expect(topic.slug).toBe("books");
+      expect(topic.description).toBe("book recommendations, new releases and reviews");
+      expect(topic.img_url).toBe(null);
+    })
+  })
+  test("400: responds with an error message if topic already exists", () => {
+    return request(app)
+    .post("/api/topics")
+    .send({
+      slug: "paper",
+      description: "anything on paper"
+    })
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Topic already exists.')
+    })
+  })
+  test("400: responds with an error message if request is invalid", () => {
+    return request(app)
+    .post("/api/topics")
+    .send({
+      slug: "books",
+    })
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid input.')
+    })
+  })
+})

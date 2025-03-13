@@ -157,5 +157,17 @@
         "comment_count": 6
         }
     }
+  },
+  "POST: /api/topics": {
+    "description": "serves a topic object with new topic as requested by the client",
+    "queries": [],
+    "exampleResponse": {
+      "topic":
+        {
+          "description": "The man, the Mitch, the legend",
+          "slug": "mitch",
+          "img_url": ""
+        }
+    }
   }
 }
