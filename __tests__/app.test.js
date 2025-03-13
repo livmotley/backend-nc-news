@@ -33,11 +33,21 @@ describe("GET /api/topics", () => {
       const topics = body.topics
       expect(topics).toHaveLength(3);
       expect(Array.isArray(topics)).toBe(true);
+      expect(topics).toBeSortedBy('slug', {descending: false});
       topics.forEach((topic) => {
         expect(typeof topic.description).toBe('string');
         expect(typeof topic.slug).toBe('string');
         expect(typeof topic.img_url).toBe('string');
       })
+    })
+  })
+  test("200: responds with an array of topics sorted in specified order and by category", () => {
+    return request(app)
+    .get("/api/topics?sort_by=description&order=desc")
+    .expect(200)
+    .then(({ body }) => {
+      const topics = body.topics;
+      expect(topics).toBeSortedBy('description', {descending: true});
     })
   })
 })
@@ -886,6 +896,101 @@ describe("GET: /api/comments", () => {
         expect(typeof comment.author).toBe('string');
         expect(typeof comment.created_at).toBe('string');
       })
+    })
+  })
+})
+
+describe("GET: /api/topics/:slug", () => {
+  test("200: responds with a topic object for the topic specified in the path", () => {
+    return request(app)
+    .get('/api/topics/paper')
+    .expect(200)
+    .then(({ body }) => {
+      const topic = body.topic;
+      expect(topic.slug).toBe('paper');
+      expect(topic.description).toBe('what books are made of');
+      expect(topic.img_url).toBe("");
+    })
+  })
+  test("404: responds with an error message if the topic doesn't exist", () => {
+    return request(app)
+    .get('/api/topics/books')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Topic not found.')
+    })
+  })
+})
+
+describe("DELETE: /api/topics/:slug", () => {
+  test("204: responds with no content if the topic has successfully deleted", () => {
+    return request(app)
+    .delete('/api/topics/paper')
+    .expect(204)
+    .then(({ body }) => {
+      expect(Object.keys(body).length).toBe(0);
+    })
+  })
+  test("404: responds with an error message if the topic doesn't exist", () => {
+    return request(app)
+    .delete('/api/topics/books')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Topic not found.')
+    })
+  })
+})
+
+describe("PATCH: /api/topics/:slug", () => {
+  test("200: returns updated topic object for description only", () => {
+    return request(app)
+    .patch('/api/topics/paper')
+    .send({
+      description: "updated description"
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const topic = body.topic;
+      expect(topic.description).toBe("updated description");
+      expect(topic.slug).toBe("paper");
+      expect(topic.img_url).toBe("");
+    })
+  })
+  test("200: returns updated topic object for img_url only", () => {
+    return request(app)
+    .patch('/api/topics/paper')
+    .send({
+      img_url: "https://unsplash.com/photos/a-close-up-of-a-piece-of-white-paper-nW3XR5c1aCg"
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const topic = body.topic;
+      expect(topic.description).toBe("what books are made of");
+      expect(topic.slug).toBe("paper");
+      expect(topic.img_url).toBe("https://unsplash.com/photos/a-close-up-of-a-piece-of-white-paper-nW3XR5c1aCg");
+    })
+  })
+  test("200: returns updated topic object for both properties", () => {
+    return request(app)
+    .patch('/api/topics/paper')
+    .send({
+      description: "updated description",
+      img_url: "https://unsplash.com/photos/a-close-up-of-a-piece-of-white-paper-nW3XR5c1aCg"
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const topic = body.topic;
+      expect(topic.description).toBe("updated description");
+      expect(topic.slug).toBe("paper");
+      expect(topic.img_url).toBe("https://unsplash.com/photos/a-close-up-of-a-piece-of-white-paper-nW3XR5c1aCg");
+    })
+  })
+  test("404: responds with an error message if the topic doesn't exist", () => {
+    return request(app)
+    .delete('/api/topics/books')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Topic not found.')
     })
   })
 })

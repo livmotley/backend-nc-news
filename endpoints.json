@@ -4,7 +4,7 @@
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
-    "queries": [],
+    "queries": ["limit", "p", "sort_by", "order"],
     "exampleResponse": {
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
@@ -190,6 +190,36 @@
         "created_at": "2020-10-31T03:03:00.000Z"
         }
       ]
+    }
+  },
+  "GET: /api/topics/:slug": {
+    "description": "serves a topic object specified by the topic slug",
+    "queries": [],
+    "exampleResponse": {
+      "topic":
+        {
+        "description": "The man, the Mitch, the legend",
+        "slug": "mitch",
+        "img_url": ""
+        }
+    }
+  },
+  "DELETE: /api/topics/:slug": {
+    "description": "serves a 204 status code, providing no content when request has successfully deleted topic",
+    "queries": [],
+    "exampleResponse": {
+    }
+  },
+  "PATCH: /api/topics/:slug": {
+    "description": "serves a topic object with updated properties",
+    "queries": [],
+    "exampleResponse": {
+      "topic":
+        {
+        "description": "new description",
+        "slug": "mitch",
+        "img_url": ""
+        }
     }
   }
 }
