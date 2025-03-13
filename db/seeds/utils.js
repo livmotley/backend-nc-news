@@ -34,4 +34,16 @@ function checkDataType(data) {
   }
 }
 
-module.exports = { createRefObject, convertTimestampToDate, checkExists, checkDataType };
+function checkForDuplicates(table, column, value, item) {
+  const queryStr = format(`
+    SELECT * FROM %I
+    WHERE %I = $1`, table, column);
+    return db.query(queryStr, [value])
+    .then(({ rows }) => {
+      if(rows.length > 0) {
+        return Promise.reject({status: 400, msg: `${item} already exists.`})
+      }
+    })
+}
+
+module.exports = { createRefObject, convertTimestampToDate, checkExists, checkDataType, checkForDuplicates };

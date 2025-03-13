@@ -35,7 +35,7 @@ function createTopics() {
   return db.query(`CREATE TABLE topics(
     slug VARCHAR(100) PRIMARY KEY,
     description VARCHAR(500) NOT NULL,
-    img_url VARCHAR(1000) NOT NULL
+    img_url VARCHAR(1000)
   )`);
 }
 
