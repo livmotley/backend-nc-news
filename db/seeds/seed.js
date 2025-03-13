@@ -51,7 +51,7 @@ function createArticles() {
   return db.query(`CREATE TABLE articles(
     article_id SERIAL PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
-    topic VARCHAR(100) REFERENCES topics(slug),
+    topic VARCHAR(100) REFERENCES topics(slug) ON DELETE SET NULL,
     author VARCHAR(40) REFERENCES users(username),
     body TEXT NOT NULL,
     created_at TIMESTAMP,

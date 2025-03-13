@@ -1,5 +1,5 @@
-const { fetchAllTopics, addNewTopic } = require('../models/topics.models');
-const { checkForDuplicates } = require("../db/seeds/utils.js");
+const { fetchAllTopics, addNewTopic, fetchTopicBySlug, removeTopic } = require('../models/topics.models');
+const { checkExists, checkForDuplicates } = require("../db/seeds/utils.js");
 
 exports.getAllTopics = (req, res, next) => {
     fetchAllTopics()
@@ -21,6 +21,31 @@ exports.postNewTopic = (req, res, next) => {
     })
     .then((topic) => {
         res.status(201).send({topic})
+    })
+    .catch((err) => {
+        next(err);
+    })
+}
+
+exports.getTopicBySlug = (req, res, next) => {
+    const { slug } = req.params;
+    fetchTopicBySlug(slug)
+    .then((topic) => {
+        res.status(200).send({topic})
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+exports.deleteTopic = (req, res, next) => {
+    const { slug } = req.params;
+    checkExists('topics','slug', slug, 'Topic')
+    .then(() => {
+        return removeTopic(slug)
+    })
+    .then(() => {
+        res.status(204).send();
     })
     .catch((err) => {
         next(err);

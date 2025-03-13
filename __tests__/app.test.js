@@ -889,3 +889,44 @@ describe("GET: /api/comments", () => {
     })
   })
 })
+
+describe("GET: /api/topics/:slug", () => {
+  test("200: responds with a topic object for the topic specified in the path", () => {
+    return request(app)
+    .get('/api/topics/paper')
+    .expect(200)
+    .then(({ body }) => {
+      const topic = body.topic;
+      expect(topic.slug).toBe('paper');
+      expect(topic.description).toBe('what books are made of');
+      expect(topic.img_url).toBe("");
+    })
+  })
+  test("404: responds with an error message if the topic doesn't exist", () => {
+    return request(app)
+    .get('/api/topics/books')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Topic not found.')
+    })
+  })
+})
+
+describe("DELETE: /api/topics/:slug", () => {
+  test("204: responds with no content if the topic has successfully deleted", () => {
+    return request(app)
+    .delete('/api/topics/paper')
+    .expect(204)
+    .then(({ body }) => {
+      expect(Object.keys(body).length).toBe(0);
+    })
+  })
+  test("404: responds with an error message if the topic doesn't exist", () => {
+    return request(app)
+    .delete('/api/topics/books')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Topic not found.')
+    })
+  })
+})
