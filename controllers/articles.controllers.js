@@ -1,4 +1,4 @@
-const { fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addNewComment, updateVoteCount, addNewArticle, removeArticleId } = require('../models/articles.models');
+const { fetchArticleById, fetchAllArticles, fetchCommentsByArticleId, addNewComment, updateVoteCount, addNewArticle, removeArticleId, removeAllCommentsByArticleId } = require('../models/articles.models');
 const { checkExists, checkDataType } = require("../db/seeds/utils.js");
 
 exports.getArticleById = (req, res, next) => {

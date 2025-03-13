@@ -1,4 +1,4 @@
-const { removeCommentById, updateCommentVote } = require("../models/comments.models.js");
+const { removeCommentById, updateCommentVote, fetchAllComments } = require("../models/comments.models.js");
 const { checkExists } = require("../db/seeds/utils.js");
 
 exports.deleteCommentById = (req, res, next) => {
@@ -27,4 +27,15 @@ exports.patchCommentVote = (req, res, next) => {
         next(err);
     })
     
+}
+
+exports.getAllComments = (req, res, next) => {
+    const { limit, p } = req.query;
+    fetchAllComments(limit, p)
+    .then((comments) => {
+        res.status(200).send({comments});
+    })
+    .catch((err) => {
+        next(err);
+    })
 }

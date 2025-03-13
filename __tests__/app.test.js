@@ -783,3 +783,75 @@ describe("DELETE: /api/articles/:article_id", () => {
     })
   })
 })
+
+describe("GET: /api/comments", () => {
+  test("200: responds with first 10 comments when limit query isn't provided", () => {
+    return request(app)
+    .get('/api/comments')
+    .expect(200)
+    .then(({ body }) => {
+      const comments = body.comments;
+      expect(comments.length).toBe(10);
+      comments.forEach((comment) => {
+        expect(typeof comment.comment_id).toBe('number');
+        expect(typeof comment.article_id).toBe('number');
+        expect(typeof comment.body).toBe('string');
+        expect(typeof comment.votes).toBe('number');
+        expect(typeof comment.author).toBe('string');
+        expect(typeof comment.created_at).toBe('string');
+      })
+    })
+  })
+  test("200: responds with comments when limit query is provided", () => {
+    return request(app)
+    .get('/api/comments?limit=5')
+    .expect(200)
+    .then(({ body }) => {
+      const comments = body.comments;
+      expect(comments.length).toBe(5);
+      comments.forEach((comment) => {
+        expect(typeof comment.comment_id).toBe('number');
+        expect(typeof comment.article_id).toBe('number');
+        expect(typeof comment.body).toBe('string');
+        expect(typeof comment.votes).toBe('number');
+        expect(typeof comment.author).toBe('string');
+        expect(typeof comment.created_at).toBe('string');
+      })
+    })
+  })
+  test("200: responds with comments when page query is provided", () => {
+    return request(app)
+    .get('/api/comments?p=2')
+    .expect(200)
+    .then(({ body }) => {
+      const comments = body.comments;
+      expect(comments.length).toBe(8);
+      comments.forEach((comment) => {
+        expect(typeof comment.comment_id).toBe('number');
+        expect(typeof comment.article_id).toBe('number');
+        expect(typeof comment.body).toBe('string');
+        expect(typeof comment.votes).toBe('number');
+        expect(typeof comment.author).toBe('string');
+        expect(typeof comment.created_at).toBe('string');
+      })
+    })
+  })
+  test("200: responds with comments when page and limit queries is provided", () => {
+    return request(app)
+    .get('/api/comments?limit=3&p=3')
+    .expect(200)
+    .then(({ body }) => {
+      const comments = body.comments;
+      expect(comments.length).toBe(3);
+      expect(comments[0].comment_id).toBe(7);
+      comments.forEach((comment) => {
+        expect(typeof comment.comment_id).toBe('number');
+        expect(typeof comment.article_id).toBe('number');
+        expect(typeof comment.body).toBe('string');
+        expect(typeof comment.votes).toBe('number');
+        expect(typeof comment.author).toBe('string');
+        expect(typeof comment.created_at).toBe('string');
+      })
+    })
+  })
+})
