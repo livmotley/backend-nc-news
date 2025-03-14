@@ -581,11 +581,21 @@ describe("GET /api/users", () => {
     .then(({ body }) => {
       const users = body.users;
       expect(users.length).toBe(4);
+      expect(users).toBeSortedBy('username', {descending: false});
       users.forEach((user) => {
         expect(typeof user.username).toBe('string');
         expect(typeof user.name).toBe('string');
         expect(typeof user.avatar_url).toBe('string');
       })
+    })
+  })
+  test("200: responds with an array of users sorted in specified order and by category", () => {
+    return request(app)
+    .get("/api/users?sort_by=name&order=desc")
+    .expect(200)
+    .then(({ body }) => {
+      const users = body.users;
+      expect(users).toBeSortedBy('name', {descending: true});
     })
   })
 })
@@ -991,6 +1001,71 @@ describe("PATCH: /api/topics/:slug", () => {
     .expect(404)
     .then(({ body }) => {
       expect(body.msg).toBe('Topic not found.')
+    })
+  })
+})
+
+describe("DELETE: /api/users/:username", () => {
+  test("204: responds with no content when a user is successfully deleted", () => {
+    return request(app)
+    .delete('/api/users/icellusedkars')
+    .expect(204)
+    .then(({ body }) => {
+      expect(Object.keys(body).length).toBe(0)
+    })
+  })
+  test("404: responds with an error message if the user does not exist", () => {
+    return request(app)
+    .delete('/api/users/livmotley')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('User not found.')
+    })
+  })
+})
+
+describe("PATCH: /api/users/:username", () => {
+  test("200: responds with updated user object when it has successfully been updated", () => {
+    return request(app)
+    .patch('/api/users/icellusedkars')
+    .send({
+      name: "liv",
+      avatar_url: "https://www.pexels.com/photo/close-up-shot-of-a-person-holding-a-yellow-balloon-8768918/"
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const user = body.user;
+      expect(user.username).toBe("icellusedkars");
+      expect(user.name).toBe("liv");
+      expect(user.avatar_url).toBe("https://www.pexels.com/photo/close-up-shot-of-a-person-holding-a-yellow-balloon-8768918/");
+    })
+  })
+  test("200: responds with updated user object when it has successfully been updated with name", () => {
+    return request(app)
+    .patch('/api/users/icellusedkars')
+    .send({
+      name: "liv"
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const user = body.user;
+      expect(user.username).toBe("icellusedkars");
+      expect(user.name).toBe("liv");
+      expect(user.avatar_url).toBe("https://avatars2.githubusercontent.com/u/24604688?s=460&v=4");
+    })
+  })
+  test("200: responds with updated user object when it has successfully been updated with avatar_url", () => {
+    return request(app)
+    .patch('/api/users/icellusedkars')
+    .send({
+      avatar_url: "https://www.pexels.com/photo/close-up-shot-of-a-person-holding-a-yellow-balloon-8768918/"
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const user = body.user;
+      expect(user.username).toBe("icellusedkars");
+      expect(user.name).toBe("sam");
+      expect(user.avatar_url).toBe("https://www.pexels.com/photo/close-up-shot-of-a-person-holding-a-yellow-balloon-8768918/");
     })
   })
 })

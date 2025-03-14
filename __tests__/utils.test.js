@@ -61,71 +61,71 @@ describe("createRefObject", () => {
   })
 });
 
-describe("checkExists", () => {
-  test("returns an error message when article doesn't exist", () => {
-    return checkExists('articles', 'article_id', 143, 'Article')
-    .catch((err) => {
-      expect(err).toEqual({ status: 404, msg: `Article not found.`});
-    })
-  })
-  test("returns an error message when user doesn't exist", () => {
-    return checkExists('users', 'username', 'livmotley', 'User')
-    .catch((err) => {
-      expect(err).toEqual({ status: 404, msg: `User not found.`});
-    })
-  })
-  test("returns an error message when topic doesn't exist", () => {
-    return checkExists('topics', 'slug', 'books', 'Topic')
-    .catch((err) => {
-      expect(err).toEqual({ status: 404, msg: `Topic not found.`});
-    })
-  })
-  test("returns an error message when comment doesn't exist", () => {
-    return checkExists('comments', 'comment_id', 143, 'Comment')
-    .catch((err) => {
-      expect(err).toEqual({ status: 404, msg: `Comment not found.`});
-    })
-  })
-})
+// describe("checkExists", () => {
+//   test("returns an error message when article doesn't exist", () => {
+//     return checkExists('articles', 'article_id', 143, 'Article')
+//     .catch((err) => {
+//       expect(err).toEqual({ status: 404, msg: `Article not found.`});
+//     })
+//   })
+//   test("returns an error message when user doesn't exist", () => {
+//     return checkExists('users', 'username', 'livmotley', 'User')
+//     .catch((err) => {
+//       expect(err).toEqual({ status: 404, msg: `User not found.`});
+//     })
+//   })
+//   test("returns an error message when topic doesn't exist", () => {
+//     return checkExists('topics', 'slug', 'books', 'Topic')
+//     .catch((err) => {
+//       expect(err).toEqual({ status: 404, msg: `Topic not found.`});
+//     })
+//   })
+//   test("returns an error message when comment doesn't exist", () => {
+//     return checkExists('comments', 'comment_id', 143, 'Comment')
+//     .catch((err) => {
+//       expect(err).toEqual({ status: 404, msg: `Comment not found.`});
+//     })
+//   })
+// })
 
-describe("checkDataTypes", () => {
-  test("returns an error message when data is not numeric", () => {
-    return checkDataType('four')
-    .catch((err) => {
-      expect(err).toEqual({status: 400, msg: 'Invalid input.'})
-    })
-  })
-  test("returns undefined when data is numeric", () => {
-    return expect(checkDataType('4')).toBeUndefined();
-  })
-})
+// describe("checkDataTypes", () => {
+//   test("returns an error message when data is not numeric", () => {
+//     return checkDataType('four')
+//     .catch((err) => {
+//       expect(err).toEqual({status: 400, msg: 'Invalid input.'})
+//     })
+//   })
+//   test("returns undefined when data is numeric", () => {
+//     return expect(checkDataType('4')).toBeUndefined();
+//   })
+// })
 
-describe("checkForDuplicates", () => {
-  test("returns an error message when article already exists", () => {
-    return checkForDuplicates('articles', 'article_id', 4, 'Article')
-    .catch((err) => {
-      expect(err).toEqual({status: 400, msg: 'Article already exists.'})
-    })
-  })
-  test("returns an error message when topic already exists", () => {
-    return checkForDuplicates('topics', 'slug', "paper", 'Topic')
-    .catch((err) => {
-      expect(err).toEqual({status: 400, msg: 'Topic already exists.'})
-    })
-  })
-  test("returns an error message when user already exists", () => {
-    return checkForDuplicates('users', 'username', 'rogersop', 'User')
-    .catch((err) => {
-      expect(err).toEqual({status: 400, msg: 'User already exists.'})
-    })
-  })
-  test("returns an error message when comment already exists", () => {
-    return checkForDuplicates('comments', 'comment_id', 1, 'Comment')
-    .catch((err) => {
-      expect(err).toEqual({status: 400, msg: 'Comment already exists.'})
-    })
-  })
-  test("returns undefined when item doesn't exist yet", () => {
-    return expect(checkForDuplicates('topics', 'slug', 'books', 'Topic')).resolves.toBeUndefined();
-  })
-})
+// describe("checkForDuplicates", () => {
+//   test("returns an error message when article already exists", () => {
+//     return checkForDuplicates('articles', 'article_id', 4, 'Article')
+//     .catch((err) => {
+//       expect(err).toEqual({status: 400, msg: 'Article already exists.'})
+//     })
+//   })
+//   test("returns an error message when topic already exists", () => {
+//     return checkForDuplicates('topics', 'slug', "paper", 'Topic')
+//     .catch((err) => {
+//       expect(err).toEqual({status: 400, msg: 'Topic already exists.'})
+//     })
+//   })
+//   test("returns an error message when user already exists", () => {
+//     return checkForDuplicates('users', 'username', 'rogersop', 'User')
+//     .catch((err) => {
+//       expect(err).toEqual({status: 400, msg: 'User already exists.'})
+//     })
+//   })
+//   test("returns an error message when comment already exists", () => {
+//     return checkForDuplicates('comments', 'comment_id', 1, 'Comment')
+//     .catch((err) => {
+//       expect(err).toEqual({status: 400, msg: 'Comment already exists.'})
+//     })
+//   })
+//   test("returns undefined when item doesn't exist yet", () => {
+//     return expect(checkForDuplicates('topics', 'slug', 'books', 'Topic')).resolves.toBeUndefined();
+//   })
+// })

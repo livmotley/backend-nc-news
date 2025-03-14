@@ -52,7 +52,7 @@ function createArticles() {
     article_id SERIAL PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
     topic VARCHAR(100) REFERENCES topics(slug) ON DELETE SET NULL,
-    author VARCHAR(40) REFERENCES users(username),
+    author VARCHAR(40) REFERENCES users(username) ON DELETE CASCADE,
     body TEXT NOT NULL,
     created_at TIMESTAMP,
     votes INT DEFAULT 0,
@@ -66,7 +66,7 @@ function createComments() {
     article_id INT REFERENCES articles(article_id) ON DELETE CASCADE,
     body TEXT NOT NULL,
     votes INT DEFAULT 0,
-    author VARCHAR(40) REFERENCES users(username),
+    author VARCHAR(40) REFERENCES users(username) ON DELETE CASCADE,
     created_at TIMESTAMP
     )`);
 }
