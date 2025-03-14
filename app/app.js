@@ -13,4 +13,8 @@ app.use(handlePsqlErrors);
 
 app.use(handleServerErrors);
 
+app.all('*', (req, res) => {
+    res.status(404).send({msg: 'Path not found.'});
+})
+
 module.exports = app;

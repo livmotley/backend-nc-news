@@ -1069,3 +1069,14 @@ describe("PATCH: /api/users/:username", () => {
     })
   })
 })
+
+describe("GET: /api/not-a-route", () => {
+  test("404: responds with an error message when a route doesn't exist", () => {
+    return request(app)
+    .get('/api/not-a-route')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Path not found.')
+    })
+  })
+})
