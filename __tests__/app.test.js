@@ -1023,3 +1023,49 @@ describe("DELETE: /api/users/:username", () => {
     })
   })
 })
+
+describe("PATCH: /api/users/:username", () => {
+  test("200: responds with updated user object when it has successfully been updated", () => {
+    return request(app)
+    .patch('/api/users/icellusedkars')
+    .send({
+      name: "liv",
+      avatar_url: "https://www.pexels.com/photo/close-up-shot-of-a-person-holding-a-yellow-balloon-8768918/"
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const user = body.user;
+      expect(user.username).toBe("icellusedkars");
+      expect(user.name).toBe("liv");
+      expect(user.avatar_url).toBe("https://www.pexels.com/photo/close-up-shot-of-a-person-holding-a-yellow-balloon-8768918/");
+    })
+  })
+  test("200: responds with updated user object when it has successfully been updated with name", () => {
+    return request(app)
+    .patch('/api/users/icellusedkars')
+    .send({
+      name: "liv"
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const user = body.user;
+      expect(user.username).toBe("icellusedkars");
+      expect(user.name).toBe("liv");
+      expect(user.avatar_url).toBe("https://avatars2.githubusercontent.com/u/24604688?s=460&v=4");
+    })
+  })
+  test("200: responds with updated user object when it has successfully been updated with avatar_url", () => {
+    return request(app)
+    .patch('/api/users/icellusedkars')
+    .send({
+      avatar_url: "https://www.pexels.com/photo/close-up-shot-of-a-person-holding-a-yellow-balloon-8768918/"
+    })
+    .expect(200)
+    .then(({ body }) => {
+      const user = body.user;
+      expect(user.username).toBe("icellusedkars");
+      expect(user.name).toBe("sam");
+      expect(user.avatar_url).toBe("https://www.pexels.com/photo/close-up-shot-of-a-person-holding-a-yellow-balloon-8768918/");
+    })
+  })
+})

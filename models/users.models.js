@@ -70,3 +70,26 @@ exports.removeUser = (username) => {
             return rows[0]
         })
 }
+
+exports.updateUser = (username, name, avatar_url) => {
+    let query = `UPDATE users`;
+    let values = [];
+
+    if(name && !avatar_url) {
+        query += ` SET name = $1 WHERE username = $2`
+        values.push(name, username);
+    } else if(!name && avatar_url) {
+        query += ` SET avatar_url = $1 WHERE username = $2`
+        values.push(avatar_url, username);
+    } else if(name && avatar_url) {
+        query += ` SET avatar_url = $1, name = $2 WHERE username = $3`
+        values.push(avatar_url, name, username);
+    }
+
+    query += ` RETURNING *`
+
+    return db.query(query, values)
+    .then(({ rows }) => {
+        return rows[0];
+    })
+}

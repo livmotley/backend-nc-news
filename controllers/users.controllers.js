@@ -1,5 +1,5 @@
 const { checkExists } = require("../db/seeds/utils.js");
-const { fetchAllUsers, fetchSpecificUser, removeUser } = require("../models/users.models.js");
+const { fetchAllUsers, fetchSpecificUser, removeUser, updateUser } = require("../models/users.models.js");
 
 exports.getAllUsers = (req, res, next) => {
     const { sort_by, order, limit, p } = req.query;
@@ -34,6 +34,21 @@ exports.deleteUser = (req, res, next) => {
     })
     .then(() => {
         res.status(204).send()
+    })
+    .catch((err) => {
+        next(err);
+    })
+}
+
+exports.patchUser = (req, res, next) => {
+    const { username } = req.params;
+    const { name, avatar_url } = req.body;
+    checkExists('users', 'username', username, 'User')
+    .then(() => {
+        return updateUser(username, name, avatar_url)
+    })
+    .then((user) => {
+        res.status(200).send({user})
     })
     .catch((err) => {
         next(err);
