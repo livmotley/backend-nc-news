@@ -48,7 +48,7 @@
     "description": "serves an array of comment objects indicated by the article_id",
     "queries": ["limit", "p"],
     "exampleResponse": {
-      "articles": [
+      "comments": [
         {
         "comment_id": 9,
         "votes": 0,
@@ -63,8 +63,12 @@
   "POST /api/articles/:article_id/comments": {
     "description": "serves a new comment object added to an article by the article_id",
     "queries": [],
+    "exampleRequest": {
+      "username": "butter_bridge",
+      "body": "Great article!"
+    },
     "exampleResponse": {
-      "articles": [
+      "comment":
         {
         "comment_id": 9,
         "votes": 0,
@@ -73,12 +77,14 @@
         "body": "Superficially charming",
         "article_id": 1
         }
-      ]
     }
   },
   "PATCH /api/articles/:article_id": {
     "description": "serves an updated article object with new vote count",
     "queries": [],
+    "exampleRequest": {
+      "inc_votes": 10
+    },
     "exampleResponse": {
       "article":
         {
@@ -128,6 +134,9 @@
   "PATCH /api/comments/:comment_id": {
     "description": "serves a comment object with new vote count which is requested by the client",
     "queries": [],
+    "exampleRequest": {
+      "inc_votes": 2
+    },
     "exampleResponse": {
       "comment":
         {
@@ -143,6 +152,13 @@
   "POST: /api/articles": {
     "description": "serves an article object with new article as input by the client",
     "queries": [],
+    "exampleRequest": {
+      "author": "icellusedkars",
+      "title": "Writing a test for a POST Method",
+      "body": "This article will show you how to write a test for a POST Method using Node.js in JavaScript",
+      "topic": "paper",
+      "article_img_url": "https://www.pexels.com/photo/person-encoding-in-laptop-574071/"
+    },
     "exampleResponse": {
       "article":
         {
@@ -161,6 +177,10 @@
   "POST: /api/topics": {
     "description": "serves a topic object with new topic as requested by the client",
     "queries": [],
+    "exampleRequest": {
+      "slug": "books",
+      "description": "book recommendations, new releases and reviews"
+    },
     "exampleResponse": {
       "topic":
         {
@@ -213,6 +233,9 @@
   "PATCH: /api/topics/:slug": {
     "description": "serves a topic object with updated properties",
     "queries": [],
+    "exampleRequest": {
+      "description": "updated description"
+    },
     "exampleResponse": {
       "topic":
         {
@@ -231,6 +254,10 @@
   "PATCH: /api/users/:username": {
     "description": "serves a user object that has been updated as per the client's request",
     "queries": [],
+    "exampleRequest": {
+      "name": "liv",
+      "avatar_url": "https://www.pexels.com/photo/close-up-shot-of-a-person-holding-a-yellow-balloon-8768918/"
+    },
     "exampleResponse": {
       "user":
         {

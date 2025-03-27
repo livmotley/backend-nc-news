@@ -41,12 +41,6 @@ exports.fetchAllUsers = (sort_by, order, limit, p) => {
         }
         return rows;
     })
-
-    return db.query(`
-        SELECT * FROM users`)
-        .then(({ rows }) => {
-            return rows;
-        })
 }
 
 exports.fetchSpecificUser = (username) => {
