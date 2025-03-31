@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const { handleServerErrors, handleCustomErrors, handlePsqlErrors } = require("../controllers/errors.controllers");
 const apiRouter = require("./api-router");
+const cors = require('cors');
+
+app.use(cors());
 
 app.use(express.json());
 
