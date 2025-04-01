@@ -21,7 +21,7 @@ exports.fetchAllArticles = (sort_by, order, topic, limit, p) => {
     const whitelistSortOptions = ["votes", "author", "title", "article_id", "topic", "comment_count", "created_at"];
     const whitelistOrderOptions = ["asc", "desc"];
     let defaultQuery = `
-        SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count 
+        SELECT articles.author, articles.title, articles.article_id, articles.body, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count 
         FROM articles
         LEFT JOIN comments 
         ON articles.article_id = comments.article_id`
