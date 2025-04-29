@@ -41,7 +41,7 @@ describe("GET /api/topics", () => {
       })
     })
   })
-  test("200: responds with an array of topics sorted in specified order and by category", () => {
+  test.only("200: responds with an array of topics sorted in specified order and by category", () => {
     return request(app)
     .get("/api/topics?sort_by=description&order=desc")
     .expect(200)
