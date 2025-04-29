@@ -43,8 +43,8 @@ exports.getCommentsByArticleId = (req, res, next) => {
     .then(() => {
         return fetchCommentsByArticleId(article_id, limit, p)
     })
-    .then((comments) => {
-        res.status(200).send({comments})
+    .then((result) => {
+        res.status(200).send({comments: result.comments, totalComments: result.totalComments})
     })
     .catch((err) => {
         next(err);

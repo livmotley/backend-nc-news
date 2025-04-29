@@ -83,14 +83,16 @@ exports.fetchCommentsByArticleId = (article_id, limit, p) => {
     WHERE comments.article_id = $1
     ORDER BY comments.created_at DESC`;
     let queryValues = [article_id];
-    let totalComments = `SELECT COUNT(*) AS total_comments FROM comments`
+    let totalCommentsQuery = `SELECT COUNT(*) AS total_comments FROM comments`
 
     limit = Number(limit) || 10;
     let y = ((Number(p) - 1) * limit);
 
-    return db.query(totalComments)
+    return db.query(totalCommentsQuery)
     .then(({rows}) => {
-        if((limit * (Number(p) - 1)) > rows[0].total_comments) {
+        const totalComments = parseInt(rows[0].total_comments, 10);
+
+        if((limit * (Number(p) - 1)) >= totalComments) {
             return Promise.reject({status: 404, msg: 'Page not found.'})
         }
         else {
@@ -103,19 +105,21 @@ exports.fetchCommentsByArticleId = (article_id, limit, p) => {
             } else if(limit && p) {
                 queryStr += ` LIMIT $2 OFFSET $3`;
                 queryValues.push(limit, y)
-            } else if(!limit && !p) {
+            } 
+            else if(!limit && !p) {
                 queryStr += ` LIMIT $2`;
                 queryValues.push(limit);
             }
         }
-    }).then(() => {
-        return db.query(queryStr, queryValues)
-    }).then(({rows}) => {
+
+        return db.query(queryStr, queryValues).then(({rows}) => {
         if(rows.length === 0 ) {
             return Promise.reject({status: 404, msg: 'Article not found.'})
         }
-        return rows;
-    })
+
+        return {comments: rows, totalComments};
+        });
+    });
 }
 
 exports.addNewComment = (article_id, author, body) => {

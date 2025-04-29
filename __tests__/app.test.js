@@ -41,7 +41,7 @@ describe("GET /api/topics", () => {
       })
     })
   })
-  test.only("200: responds with an array of topics sorted in specified order and by category", () => {
+  test("200: responds with an array of topics sorted in specified order and by category", () => {
     return request(app)
     .get("/api/topics?sort_by=description&order=desc")
     .expect(200)
@@ -302,11 +302,12 @@ describe("GET /api/articles", () => {
 })
 
 describe("GET /api/articles/:article_id/comments", () => {
-  test("200: responds with an array of comments for the given article_id, sorted by date made in descending order. Each comment should have the following properties: comment_id, votes, created_at, author, body, article_id, limited to the default length (10)", () => {
+  test.only("200: responds with an array of comments for the given article_id, sorted by date made in descending order. Each comment should have the following properties: comment_id, votes, created_at, author, body, article_id, limited to the default length (10)", () => {
     return request(app)
     .get('/api/articles/1/comments')
     .expect(200)
     .then(({ body }) => {
+      console.log(body)
       const comments = body.comments;
       expect(comments.length).toBe(10);
       expect(comments).toBeSortedBy('created_at', {descending: true});
